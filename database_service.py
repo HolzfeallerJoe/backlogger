@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlite3 import Connection
 from typing import Optional, NamedTuple
 
@@ -27,7 +28,8 @@ def create_database(connection: Connection) -> OperationResult:
 						duration TEXT,
 						rating INTEGER,
 						worth INTEGER,
-						reason TEXT
+						reason TEXT,
+						finished_at DateTime,
 				);
 			"""
 		cursor.execute(create_game_table)
@@ -73,6 +75,7 @@ def add_post_finish_stats(
 					rating = ?,
 					worth = ?,
 					reason = ?
+					finished_at = ?
 			WHERE game_id = ?
 		"""
 
@@ -87,6 +90,7 @@ def add_post_finish_stats(
 				pfg.rating,
 				pfg.worth,
 				pfg.reason,
+				datetime,
 				game_id,
 			],
 		)

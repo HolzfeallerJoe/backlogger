@@ -33,3 +33,8 @@ class PostFinish(StrippingModel):
 	rating: Rating0to10
 	worth: bool
 	reason: Optional[str] = None
+	finished_at: Optional[datetime] = Field(
+		None,
+		description='When the post finish stats where added',
+		json_schema_extra={'readOnly': True},
+	)
