@@ -14,7 +14,7 @@ NonEmptyStr = Annotated[str, Field(min_length=1, description='A non-empty string
 DurationStr = Annotated[
 	str,
 	Field(
-		pattern=r'^\d+\s+(day|days|week|weeks|month|months|year|years)$',
+		pattern=r'^\d+ (day|days|week|weeks|month|months|year|years)$',
 		description="e.g. '3 days', '1 month', etc.",
 	),
 ]

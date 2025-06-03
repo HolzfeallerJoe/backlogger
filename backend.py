@@ -42,6 +42,7 @@ app = FastAPI(
 
 # TODO: Error handling needs to be better / Better HTTPExceptions and details and more
 
+
 @app.get(
 	'/games',
 	response_model=Dict[str, List[Game]],
@@ -128,8 +129,8 @@ def get_post_finish(
 @app.patch(
 	'/games/{game_id}/post_finish',
 	response_model=Dict[str, bool],
-	summary='Add or update post-finish stats',
-	description='Insert or update the post-completion statistics for a given game.',
+	summary='Add post-finish stats',
+	description='Insert the post-completion statistics for a given game.',
 )
 def patch_post_finish(
 	pfg: PostFinish,
