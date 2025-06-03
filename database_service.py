@@ -1,7 +1,7 @@
 from sqlite3 import Connection
 from typing import Optional, NamedTuple
 
-from game import Game, PostFinishGame
+from game import Game, PostFinish
 
 
 class OperationResult(NamedTuple):
@@ -60,7 +60,7 @@ def add_game(connection: Connection, game: Game) -> OperationResult:
 
 
 def add_post_finish_stats(
-	connection: Connection, pfg: PostFinishGame
+	connection: Connection, pfg: PostFinish, game_id: int
 ) -> OperationResult:
 	try:
 		print('~~~Update Game~~~')
@@ -80,7 +80,6 @@ def add_post_finish_stats(
 		cursor.execute(
 			update_statement,
 			[
-				pfg.game_id,
 				pfg.dropped,
 				pfg.credits,
 				pfg.time_played,
@@ -88,6 +87,7 @@ def add_post_finish_stats(
 				pfg.rating,
 				pfg.worth,
 				pfg.reason,
+				game_id,
 			],
 		)
 		connection.commit()
@@ -117,7 +117,7 @@ def delete_game(connection: Connection, game_id: int) -> OperationResult:
 
 def get_all_games(connection: Connection) -> OperationResult:
 	try:
-		print('~~~Selection all Games~~~')
+		print('~~~Selecting all Games~~~')
 		select_statement = """
 				SELECT * FROM Game
 			"""
@@ -126,7 +126,7 @@ def get_all_games(connection: Connection) -> OperationResult:
 		cursor.execute(select_statement)
 		games = cursor.fetchall()
 		print('Games were selected')
-		return OperationResult(True, 'Games', games)
+		return OperationResult(True, 'Games', [dict(game) for game in games])
 	except Exception as e:
 		print(f'Error getting all games: {e}')
 		return OperationResult(False, 'Error getting all games', e)
@@ -134,7 +134,7 @@ def get_all_games(connection: Connection) -> OperationResult:
 
 def get_game_by_id(connection: Connection, game_id: int) -> OperationResult:
 	try:
-		print('~~~Selection Game~~~')
+		print('~~~Selecting Game~~~')
 		select_statement = """
 				SELECT * FROM Game WHERE game_id = ?
 			"""
@@ -145,7 +145,26 @@ def get_game_by_id(connection: Connection, game_id: int) -> OperationResult:
 		if not game:
 			game = {}
 		print('Game was selected')
-		return OperationResult(True, 'Game', game)
+		return OperationResult(True, 'Game', dict(game))
 	except Exception as e:
 		print(f'Error getting game: {e}')
 		return OperationResult(False, 'Error getting game', e)
+
+
+def get_post_finish_game_id(connection: Connection, game_id: int) -> OperationResult:
+	try:
+		print('~~~Selecting Post Finish~~~')
+		select_statement = """
+				SELECT * FROM Game WHERE game_id = ?
+			"""
+
+		cursor = connection.cursor()
+		cursor.execute(select_statement, [game_id])
+		post_finish = cursor.fetchone()
+		if not post_finish:
+			post_finish = {}
+		print('Post Finish was selected')
+		return OperationResult(True, 'post finish', dict(post_finish))
+	except Exception as e:
+		print(f'Error getting Post Finish: {e}')
+		return OperationResult(False, 'Error getting Post Finish', e)
