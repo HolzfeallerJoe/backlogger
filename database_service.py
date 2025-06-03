@@ -16,7 +16,7 @@ def create_database(connection: Connection) -> OperationResult:
 		create_game_table = """
 				CREATE TABLE IF NOT EXISTS Game (
 						game_id INTEGER PRIMARY KEY AUTOINCREMENT,
-						name TEXT NOT NULL,
+						name TEXT NOT NULL UNIQUE,
 						est_length INTEGER NOT NULL,
 						released INTEGER NOT NULL,
 						purchased INTEGER NOT NULL,
