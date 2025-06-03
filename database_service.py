@@ -29,7 +29,7 @@ def create_database(connection: Connection) -> OperationResult:
 						rating INTEGER,
 						worth INTEGER,
 						reason TEXT,
-						finished_at DateTime,
+						finished_at DateTime
 				);
 			"""
 		cursor.execute(create_game_table)
@@ -74,7 +74,7 @@ def add_post_finish_stats(
 					duration = ?,
 					rating = ?,
 					worth = ?,
-					reason = ?
+					reason = ?,
 					finished_at = ?
 			WHERE game_id = ?
 		"""
@@ -90,7 +90,7 @@ def add_post_finish_stats(
 				pfg.rating,
 				pfg.worth,
 				pfg.reason,
-				datetime,
+				datetime.now(),
 				game_id,
 			],
 		)
