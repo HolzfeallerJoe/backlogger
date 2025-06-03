@@ -15,23 +15,23 @@ def create_database(connection: Connection) -> OperationResult:
 	try:
 		cursor = connection.cursor()
 		create_game_table = """
-				CREATE TABLE IF NOT EXISTS Game (
-						game_id INTEGER PRIMARY KEY AUTOINCREMENT,
-						name TEXT NOT NULL UNIQUE,
-						est_length INTEGER NOT NULL,
-						released INTEGER NOT NULL,
-						purchased INTEGER NOT NULL,
-						excitement INTEGER NOT NULL,
-						dropped INTEGER,
-						credits INTEGER,
-						time_played INTEGER,
-						duration TEXT,
-						rating INTEGER,
-						worth INTEGER,
-						reason TEXT,
-						finished_at DateTime
-				);
-			"""
+			CREATE TABLE IF NOT EXISTS Game (
+					game_id INTEGER PRIMARY KEY AUTOINCREMENT,
+					name TEXT NOT NULL UNIQUE,
+					est_length INTEGER NOT NULL,
+					released INTEGER NOT NULL,
+					purchased INTEGER NOT NULL,
+					excitement INTEGER NOT NULL,
+					dropped INTEGER,
+					credits INTEGER,
+					time_played INTEGER,
+					duration TEXT,
+					rating INTEGER,
+					worth INTEGER,
+					reason TEXT,
+					finished_at DateTime
+			);
+		"""
 		cursor.execute(create_game_table)
 		connection.commit()
 		return OperationResult(True, 'Created Database')
@@ -66,20 +66,26 @@ def add_post_finish_stats(
 ) -> OperationResult:
 	try:
 		print('~~~Update Game~~~')
+
+		if not check_able_to_edit(connection, game_id):
+			return OperationResult(
+				False, 'Game can not be edited - post finish data already existend'
+			)
+
+		cursor = connection.cursor()
 		update_statement = """
 			UPDATE Game
 			SET dropped = ?,
-					credits = ?,
-					time_played = ?,
-					duration = ?,
-					rating = ?,
-					worth = ?,
-					reason = ?,
-					finished_at = ?
+			   credits = ?,
+			   time_played = ?,
+			   duration = ?,
+			   rating = ?,
+			   worth = ?,
+			   reason = ?,
+			   finished_at = ?
 			WHERE game_id = ?
 		"""
 
-		cursor = connection.cursor()
 		cursor.execute(
 			update_statement,
 			[
@@ -123,8 +129,8 @@ def get_all_games(connection: Connection) -> OperationResult:
 	try:
 		print('~~~Selecting all Games~~~')
 		select_statement = """
-				SELECT * FROM Game
-			"""
+			SELECT * FROM Game
+    """
 
 		cursor = connection.cursor()
 		cursor.execute(select_statement)
@@ -140,8 +146,8 @@ def get_game_by_id(connection: Connection, game_id: int) -> OperationResult:
 	try:
 		print('~~~Selecting Game~~~')
 		select_statement = """
-				SELECT * FROM Game WHERE game_id = ?
-			"""
+			SELECT * FROM Game WHERE game_id = ?
+		"""
 
 		cursor = connection.cursor()
 		cursor.execute(select_statement, [game_id])
@@ -159,8 +165,8 @@ def get_post_finish_game_id(connection: Connection, game_id: int) -> OperationRe
 	try:
 		print('~~~Selecting Post Finish~~~')
 		select_statement = """
-				SELECT * FROM Game WHERE game_id = ?
-			"""
+			SELECT * FROM Game WHERE game_id = ?
+		"""
 
 		cursor = connection.cursor()
 		cursor.execute(select_statement, [game_id])
@@ -172,3 +178,19 @@ def get_post_finish_game_id(connection: Connection, game_id: int) -> OperationRe
 	except Exception as e:
 		print(f'Error getting Post Finish: {e}')
 		return OperationResult(False, 'Error getting Post Finish', e)
+
+
+def check_able_to_edit(connection: Connection, game_id: int) -> bool:
+	cursor = connection.cursor()
+
+	select_statement = """
+		SELECT finished_at FROM Game WHERE game_id = ?
+	"""
+
+	cursor.execute(
+		select_statement,
+		[game_id],
+	)
+	row = cursor.fetchone()
+
+	return row['finished_at'] is None or row is None
