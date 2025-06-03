@@ -40,6 +40,7 @@ app = FastAPI(
 	lifespan=lifespan,
 )
 
+# TODO: Error handling needs to be better / Better HTTPExceptions and details and more
 
 @app.get(
 	'/games',
