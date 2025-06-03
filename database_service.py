@@ -181,6 +181,7 @@ def get_post_finish_game_id(connection: Connection, game_id: int) -> OperationRe
 
 
 def check_able_to_edit(connection: Connection, game_id: int) -> bool:
+	print('~~~Check if can be edited~~~')
 	cursor = connection.cursor()
 
 	select_statement = """
@@ -193,4 +194,8 @@ def check_able_to_edit(connection: Connection, game_id: int) -> bool:
 	)
 	row = cursor.fetchone()
 
-	return row['finished_at'] is None or row is None
+	edit = row['finished_at'] is None or row is None
+	if not edit:
+		print(f'~~~Game {game_id} can not be edited~~~')
+
+	return edit
