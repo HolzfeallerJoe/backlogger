@@ -1,31 +1,38 @@
+import os
 import sqlite3
 from contextlib import asynccontextmanager
 from os.path import exists
 from typing import Dict, List
 
+import psycopg
 from fastapi import FastAPI, HTTPException, Path
 
-from database_service import (
-	create_database,
-	get_all_games,
-	get_game_by_id,
-	delete_game,
-	add_post_finish_stats,
-	add_game,
-	get_post_finish_game_id,
-)
+import postgres_service
+import sqlite_service
 from game import PostFinish, Game
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-	if not exists('./game.db'):
-		create_connection = sqlite3.connect('game.db')
-		create_database(create_connection)
-		create_connection.close()
-	app.state.connection = sqlite3.connect('game.db', check_same_thread=False)
-	app.state.connection.row_factory = sqlite3.Row
-
+	database_type = os.getenv('DATABASE').strip()
+	match database_type:
+		case 'postgres':
+			app.state.impl = postgres_service
+			app.state.connection = psycopg.connect(
+				dbname='your_db',
+				user='your_user',
+				password='your_password',
+				host='localhost',
+				port='5432',
+			)
+			print('postgres')
+		case 'sqlite' | _:
+			app.state.impl = sqlite_service
+			if not exists('./game.db'):
+				create_connection = sqlite3.connect('game.db')
+				app.state.impl.create_database(create_connection)
+				create_connection.close()
+			app.state.connection = sqlite3.connect('game.db', check_same_thread=False)
+			app.state.connection.row_factory = sqlite3.Row
 	yield
 	# Code that executes after finish
 	app.state.connection.close()
@@ -40,6 +47,7 @@ app = FastAPI(
 	lifespan=lifespan,
 )
 
+# TODO: All sollte auch query für limit und jump haben - paging
 # TODO: Error handling needs to be better / Better HTTPExceptions and details and more
 
 
@@ -50,7 +58,7 @@ app = FastAPI(
 	description='Fetch a list of all games currently stored in the database.',
 )
 def get_games() -> Dict[str, List[Game]]:
-	res = get_all_games(app.state.connection)
+	res = app.state.impl.get_all_games(app.state.connection)
 
 	if not res.success or not res.data:
 		raise HTTPException(status_code=404, detail='No Games found')
@@ -66,7 +74,7 @@ def get_games() -> Dict[str, List[Game]]:
 	description='Add a new game to the database. Returns the auto-generated game_id.',
 )
 def post_game(game: Game) -> Dict[str, int]:
-	res = add_game(app.state.connection, game)
+	res = app.state.impl.add_game(app.state.connection, game)
 
 	if not res.success or not res.data:
 		raise HTTPException(status_code=409, detail='Game could not be created')
@@ -83,7 +91,7 @@ def post_game(game: Game) -> Dict[str, int]:
 def get_game(
 	game_id: int = Path(..., description='The integer ID of the game to retrieve', ge=1),
 ) -> Dict[str, Game]:
-	res = get_game_by_id(app.state.connection, game_id)
+	res = app.state.impl.get_game_by_id(app.state.connection, game_id)
 
 	if not res.success or not res.data:
 		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
@@ -100,7 +108,7 @@ def get_game(
 def delete_one_game(
 	game_id: int = Path(..., description='The integer ID of the game to delete', ge=1),
 ) -> Dict[str, bool]:
-	res = delete_game(app.state.connection, game_id)
+	res = app.state.impl.delete_game(app.state.connection, game_id)
 
 	if not res.success:
 		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
@@ -119,7 +127,7 @@ def get_post_finish(
 		..., description='The game ID to fetch post-finish data for', ge=1
 	),
 ) -> Dict[str, PostFinish]:
-	res = get_post_finish_game_id(app.state.connection, game_id)
+	res = app.state.impl.get_post_finish_game_id(app.state.connection, game_id)
 
 	if not res.success or not res.data:
 		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
@@ -138,7 +146,7 @@ def patch_post_finish(
 		..., description='The ID of the game to patch post-finish stats for', ge=1
 	),
 ) -> Dict[str, bool]:
-	res = add_post_finish_stats(app.state.connection, pfg, game_id)
+	res = app.state.impl.add_post_finish_stats(app.state.connection, pfg, game_id)
 
 	if not res.success:
 		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
