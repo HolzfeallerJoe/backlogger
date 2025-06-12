@@ -53,8 +53,6 @@ app = FastAPI(
 	lifespan=lifespan,
 )
 
-# TODO: Error handling needs to be better / Better HTTPExceptions and details and more
-
 
 @app.middleware('http')
 async def checkDatabaseConnection(request: Request, call_next):
