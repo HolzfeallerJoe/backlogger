@@ -45,6 +45,11 @@ async def lifespan(app: FastAPI):
 	app.state.connection.close()
 
 
+tags_metadata = [
+	{'name': 'games', 'description': 'CRUD operations on your game backlog.'},
+	{'name': 'websites', 'description': 'Frontend HTML endpoints for the Backlogger UI.'},
+]
+
 app = FastAPI(
 	title='Backlogger',
 	version='1.0.0',
@@ -52,6 +57,7 @@ app = FastAPI(
 		'REST API to track games you plan to play and record post-completion stats.'
 	),
 	lifespan=lifespan,
+	openapi_tags=tags_metadata,
 )
 templates = Jinja2Templates(directory='frontend')
 
@@ -70,6 +76,7 @@ async def check_database_connection(request: Request, call_next: any):
 	response_model=Dict[str, List[Game]],
 	summary='Retrieve all games',
 	description='Fetch a list of all games currently stored in the database.',
+	tags=['games'],
 )
 def get_games(skip: int = 0, limit: int = 100) -> Dict[str, List[Game]]:
 	res = get_all_games(app.state.connection, skip, limit)
@@ -100,6 +107,7 @@ def get_games(skip: int = 0, limit: int = 100) -> Dict[str, List[Game]]:
 	status_code=201,
 	summary='Create a new game entry',
 	description='Add a new game to the database. Returns the auto-generated game_id.',
+	tags=['games'],
 )
 def post_game(game: Game) -> Dict[str, int]:
 	game.est_length = get_est_length(game.name)
@@ -124,6 +132,7 @@ def post_game(game: Game) -> Dict[str, int]:
 	response_model=Dict[str, Game],
 	summary='Get a single game by ID',
 	description='Retrieve detailed information for a specific game by its ID.',
+	tags=['games'],
 )
 def get_game(
 	game_id: int = Path(..., description='The integer ID of the game to retrieve', ge=1),
@@ -158,6 +167,7 @@ def get_game(
 	response_model=Dict[str, bool],
 	summary='Delete a game by ID',
 	description='Remove the specified game from the database.',
+	tags=['games'],
 )
 def delete_one_game(
 	game_id: int = Path(..., description='The integer ID of the game to delete', ge=1),
@@ -184,6 +194,7 @@ def delete_one_game(
 	response_model=Dict[str, PostFinish],
 	summary='Get post-finish stats for a game',
 	description='Retrieve post-completion details for a given game.',
+	tags=['games'],
 )
 def get_post_finish(
 	game_id: int = Path(
@@ -219,6 +230,7 @@ def get_post_finish(
 	response_model=Dict[str, bool],
 	summary='Add post-finish stats',
 	description='Insert the post-completion statistics for a given game.',
+	tags=['games'],
 )
 def patch_post_finish(
 	pfg: PostFinish,
@@ -255,6 +267,7 @@ def patch_post_finish(
 	'/games/{subpath:path}',
 	include_in_schema=False,
 	response_class=JSONResponse,
+	tags=['games'],
 )
 async def games_not_found(request: Request):
 	raise HTTPException(
@@ -262,7 +275,7 @@ async def games_not_found(request: Request):
 	)
 
 
-@app.get('/index', response_class=HTMLResponse, name='index')
+@app.get('/index', response_class=HTMLResponse, name='index', tags=['websites'])
 def show_index(request: Request) -> HTMLResponse:
 	result = get_all_games(app.state.connection, skip=0, limit=100)
 	games = result.data if result.success and result.data else []
@@ -271,35 +284,37 @@ def show_index(request: Request) -> HTMLResponse:
 	)
 
 
-@app.get('/add_game', response_class=HTMLResponse, name='add_game')
+@app.get('/add_game', response_class=HTMLResponse, name='add_game', tags=['websites'])
 def show_add_game(request: Request) -> HTMLResponse:
 	return templates.TemplateResponse(
 		'404.html', {'request': request, 'title': 'Backlogger'}
 	)
 
 
-@app.get('/game_list', response_class=HTMLResponse, name='game_list')
+@app.get('/game_list', response_class=HTMLResponse, name='game_list', tags=['websites'])
 def show_game_list(request: Request) -> HTMLResponse:
 	return templates.TemplateResponse(
 		'404.html', {'request': request, 'title': 'Backlogger'}
 	)
 
 
-@app.get('/post_finish', response_class=HTMLResponse, name='post_finish')
+@app.get(
+	'/post_finish', response_class=HTMLResponse, name='post_finish', tags=['websites']
+)
 def show_post_finish(request: Request) -> HTMLResponse:
 	return templates.TemplateResponse(
 		'404.html', {'request': request, 'title': 'Backlogger'}
 	)
 
 
-@app.get('/stats', response_class=HTMLResponse, name='stats')
+@app.get('/stats', response_class=HTMLResponse, name='stats', tags=['websites'])
 def show_stats(request: Request) -> HTMLResponse:
 	return templates.TemplateResponse(
 		'404.html', {'request': request, 'title': 'Backlogger'}
 	)
 
 
-@app.get('/{full_path:path}', response_class=HTMLResponse)
+@app.get('/{full_path:path}', response_class=HTMLResponse, tags=['websites'])
 def show_404(request: Request) -> HTMLResponse:
 	return templates.TemplateResponse(
 		'404.html', {'request': request, 'title': 'Backlogger'}
