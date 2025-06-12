@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ title }}</title>
-</head>
-<body>
-    <h1>{{ title }}</h1>
-    <ul>
-    {% for game in games %}
-        <li>{{ game.name }} (est. length: {{ game.est_length }} hrs)</li>
-    {% else %}
-        <li>No games to show.</li>
-    {% endfor %}
-    </ul>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <title>{{ title }}</title>
+    </head>
+    <body>
+
+        <h1>{{ title }}</h1>
+        <ul>
+        {% for game in games %}
+            <li>{{ game.name }} (est. length: {{ game.est_length }} hrs)</li>
+        {% else %}
+            <li>No games to show.</li>
+        {% endfor %}
+        </ul>
+    </body>
 </html>

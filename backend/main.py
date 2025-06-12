@@ -251,11 +251,28 @@ def patch_post_finish(
 	return {'patched': res.success}
 
 
-@app.get('/', response_class=HTMLResponse)
+@app.get(
+	'/games/{subpath:path}',
+	include_in_schema=False,
+	response_class=JSONResponse,
+)
+async def games_not_found(request: Request, subpath: str):
+	raise HTTPException(
+		status_code=404, detail={'error': 'NotFound', 'path': request.url.path}
+	)
+
+
 @app.get('/index', response_class=HTMLResponse)
 def show_index(request: Request) -> HTMLResponse:
 	result = get_all_games(app.state.connection, skip=0, limit=100)
 	games = result.data if result.success and result.data else []
 	return templates.TemplateResponse(
-		'index.html', {'request': request, 'title': 'My Game Backlog', 'games': games}
+		'index.html', {'request': request, 'title': 'Backlogger', 'games': games}
+	)
+
+
+@app.get('/{full_path:path}', response_class=HTMLResponse)
+def show_404(request: Request) -> HTMLResponse:
+	return templates.TemplateResponse(
+		'404.html', {'request': request, 'title': 'Backlogger'}
 	)
