@@ -1,11 +1,11 @@
 import asyncio
-from typing import List
+from typing import List, Dict
 
 import httpx
 
 
 class Item:
-	def __init__(self, response):
+	def __init__(self, response: Dict):
 		self.type: str = response.get('type')
 		self.name: str = response.get('name')
 		self.id: int = response.get('id')
@@ -58,8 +58,7 @@ async def search_for_game(
 		for listing in resp.get('items'):
 			items.append(Item(listing))
 
-		steamRes = SteamResponse(resp.get('total'), items)
-		return steamRes
+		return SteamResponse(resp.get('total'), items)
 
 
 data = asyncio.run(search_for_game('Factorio'))

@@ -261,5 +261,5 @@ def check_able_to_edit(connection: Connection, game_id: int) -> bool:
 	return edit
 
 
-def checkConnection(connection: Connection) -> bool:
+def check_connection(connection: Connection) -> bool:
 	return not connection.broken and not connection.closed

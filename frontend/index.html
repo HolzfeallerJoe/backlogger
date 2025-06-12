@@ -9,14 +9,14 @@
     <div class="bg-gray-50 py-24 sm:py-32">
       <div class="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
         <h2 class="text-center text-base/7 font-semibold text-indigo-600">
-          Deploy faster
+          The niced way to track you backlog and get it over with
         </h2>
         <p class="mx-auto mt-2 max-w-lg text-center text-4xl font-semibold tracking-tight text-balance text-gray-950 sm:text-5xl">
-          Everything you need to deploy your app
+          Backlogger
         </p>
         <div class="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
           <div class="relative lg:row-span-2">
-            <a href="/add_game">
+            <a href="{{ url_for('add_game') }}">
               <div class="absolute inset-px rounded-lg bg-white lg:rounded-l-4xl">
               </div>
               <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-l-[calc(2rem+1px)]">
@@ -41,7 +41,7 @@
             </a>
           </div>
           <div class="relative max-lg:row-start-1">
-            <a href="/post_finish">
+            <a href="{{ url_for('post_finish') }}">
               <div class="absolute inset-px rounded-lg bg-white max-lg:rounded-t-4xl">
               </div>
               <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
@@ -64,7 +64,7 @@
             </a>
           </div>
           <div class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-            <a href="/stats">
+            <a href="{{ url_for('stats') }}">
               <div class="absolute inset-px rounded-lg bg-white">
               </div>
               <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
@@ -87,7 +87,7 @@
             </a>
           </div>
           <div class="relative lg:row-span-2">
-            <a href="/post_finish">
+            <a href="{{ url_for('game_list') }}">
               <div class="absolute inset-px rounded-lg bg-white max-lg:rounded-b-4xl lg:rounded-r-4xl">
               </div>
               <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]">

@@ -16,7 +16,7 @@ from postgres_service import (
 	get_post_finish_game_id,
 	add_post_finish_stats,
 	create_database,
-	checkConnection,
+	check_connection,
 )
 from game import PostFinish, Game
 
@@ -57,8 +57,8 @@ templates = Jinja2Templates(directory='frontend')
 
 
 @app.middleware('http')
-async def checkDatabaseConnection(request: Request, call_next):
-	if not checkConnection(app.state.connection):
+async def check_database_connection(request: Request, call_next: any):
+	if not check_connection(app.state.connection):
 		return JSONResponse(
 			status_code=503, content={'detail': 'Database connection lost.'}
 		)
@@ -256,18 +256,46 @@ def patch_post_finish(
 	include_in_schema=False,
 	response_class=JSONResponse,
 )
-async def games_not_found(request: Request, subpath: str):
+async def games_not_found(request: Request):
 	raise HTTPException(
 		status_code=404, detail={'error': 'NotFound', 'path': request.url.path}
 	)
 
 
-@app.get('/index', response_class=HTMLResponse)
+@app.get('/index', response_class=HTMLResponse, name='index')
 def show_index(request: Request) -> HTMLResponse:
 	result = get_all_games(app.state.connection, skip=0, limit=100)
 	games = result.data if result.success and result.data else []
 	return templates.TemplateResponse(
 		'index.html', {'request': request, 'title': 'Backlogger', 'games': games}
+	)
+
+
+@app.get('/add_game', response_class=HTMLResponse, name='add_game')
+def show_add_game(request: Request) -> HTMLResponse:
+	return templates.TemplateResponse(
+		'404.html', {'request': request, 'title': 'Backlogger'}
+	)
+
+
+@app.get('/game_list', response_class=HTMLResponse, name='game_list')
+def show_game_list(request: Request) -> HTMLResponse:
+	return templates.TemplateResponse(
+		'404.html', {'request': request, 'title': 'Backlogger'}
+	)
+
+
+@app.get('/post_finish', response_class=HTMLResponse, name='post_finish')
+def show_post_finish(request: Request) -> HTMLResponse:
+	return templates.TemplateResponse(
+		'404.html', {'request': request, 'title': 'Backlogger'}
+	)
+
+
+@app.get('/stats', response_class=HTMLResponse, name='stats')
+def show_stats(request: Request) -> HTMLResponse:
+	return templates.TemplateResponse(
+		'404.html', {'request': request, 'title': 'Backlogger'}
 	)
 
 

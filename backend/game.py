@@ -23,7 +23,7 @@ DurationStr = Annotated[
 class StrippingModel(BaseModel):
 	@field_validator('*', mode='before')
 	@classmethod
-	def _strip_all_strings(cls, v):
+	def _strip_all_strings(cls, v: any):
 		if isinstance(v, str):
 			return v.strip()
 		return v
