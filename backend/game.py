@@ -36,8 +36,10 @@ class Game(StrippingModel):
 		json_schema_extra={'readOnly': True},
 	)
 	name: NonEmptyStr = Field(..., description='Name/title of the game')
-	est_length: NonNegativeInt = Field(
-		..., description='Estimated playtime in hours (must be ≥ 0)'
+	est_length: Optional[NonNegativeInt] = Field(
+		...,
+		description='Estimated playtime in hours (must be ≥ 0)',
+		json_schema_extra={'readOnly': True},
 	)
 	released: bool = Field(
 		..., description='Whether the game has been officially released'

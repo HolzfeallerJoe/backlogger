@@ -22,7 +22,7 @@ def create_database(connection: Connection) -> OperationResult:
       CREATE TABLE IF NOT EXISTS Game (
           game_id SERIAL PRIMARY KEY,
           name TEXT NOT NULL UNIQUE,
-          est_length INTEGER NOT NULL,
+          est_length INTEGER,
           released BOOLEAN NOT NULL,
           purchased BOOLEAN NOT NULL,
           excitement INTEGER NOT NULL,
