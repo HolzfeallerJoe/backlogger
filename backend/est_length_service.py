@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Optional
 
 from howlongtobeatpy import HowLongToBeat, HowLongToBeatEntry
 
 
-def getEst_lenght(name: str) -> int | None:
+def get_est_length(name: str) -> Optional[int]:
 	ests: List[HowLongToBeatEntry] = HowLongToBeat().search(
 		name, similarity_case_sensitive=False
 	)
