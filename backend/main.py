@@ -3,7 +3,8 @@ from contextlib import asynccontextmanager
 from typing import Dict, List
 
 import psycopg
-from fastapi import FastAPI, HTTPException, Path
+from fastapi import FastAPI, HTTPException, Path, Request
+from starlette.responses import JSONResponse
 
 from postgres_service import (
 	get_all_games,
@@ -12,8 +13,11 @@ from postgres_service import (
 	delete_game,
 	get_post_finish_game_id,
 	add_post_finish_stats,
+	create_database,
+	checkConnection,
 )
 from game import PostFinish, Game
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,14 +26,18 @@ async def lifespan(app: FastAPI):
 	database_password = os.getenv('POSTGRES_PASSWORD').strip()
 	database_name = os.getenv('POSTGRES_DB').strip()
 
-	app.state.connection = psycopg.connect(
-		dbname=database_name,
-		user=database_username,
-		password=database_password,
-		host=database_host,
-		port='5432',
-	)
-	print('postgres')
+	try:
+		app.state.connection = psycopg.connect(
+			dbname=database_name,
+			user=database_username,
+			password=database_password,
+			host=database_host,
+			port='5432',
+		)
+		print('Database connection established')
+	except Exception as error:
+		raise Exception('Database connection failed.', error)
+	create_database(app.state.connection)
 	yield
 	# Code that executes after finish
 	app.state.connection.close()
@@ -47,6 +55,15 @@ app = FastAPI(
 # TODO: Setup and change functions to Postgres
 # TODO: All sollte auch query für limit und jump haben - paging
 # TODO: Error handling needs to be better / Better HTTPExceptions and details and more
+
+
+@app.middleware('http')
+async def checkDatabaseConnection(request: Request, call_next):
+	if not checkConnection(app.state.connection):
+		return JSONResponse(
+			status_code=503, content={'detail': 'Database connection lost.'}
+		)
+	return await call_next(request)
 
 
 @app.get(
