@@ -6,6 +6,7 @@ import psycopg
 from fastapi import FastAPI, HTTPException, Path, Request
 from starlette.responses import JSONResponse
 
+from est_lenght_service import getEst_lenght
 from postgres_service import (
 	get_all_games,
 	add_game,
@@ -101,6 +102,7 @@ def get_games(skip: int = 0, limit: int = 100) -> Dict[str, List[Game]]:
 	description='Add a new game to the database. Returns the auto-generated game_id.',
 )
 def post_game(game: Game) -> Dict[str, int]:
+	game.est_length = getEst_lenght(game.name)
 	res = add_game(app.state.connection, game)
 
 	if not res.success:

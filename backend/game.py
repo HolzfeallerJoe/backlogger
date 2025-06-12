@@ -37,7 +37,7 @@ class Game(StrippingModel):
 	)
 	name: NonEmptyStr = Field(..., description='Name/title of the game')
 	est_length: Optional[NonNegativeInt] = Field(
-		...,
+		None,
 		description='Estimated playtime in hours (must be ≥ 0)',
 		json_schema_extra={'readOnly': True},
 	)
