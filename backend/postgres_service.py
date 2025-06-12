@@ -153,15 +153,17 @@ def delete_game(connection: Connection, game_id: int) -> OperationResult:
 		return OperationResult(False, 'Error deleting game', e)
 
 
-def get_all_games(connection: Connection) -> OperationResult:
+def get_all_games(connection: Connection, skip: int, limit: int) -> OperationResult:
 	try:
 		print('~~~Selecting all Games~~~')
 		select_statement = SQL("""
 			SELECT * FROM Game
+			OFFSET %s
+			LIMIT %s
     """)
 
 		cursor = connection.cursor()
-		cursor.execute(select_statement)
+		cursor.execute(select_statement, [skip, limit])
 
 		games = cursor.fetchall()
 		columns = [desc[0] for desc in cursor.description]
@@ -204,7 +206,7 @@ def get_post_finish_game_id(connection: Connection, game_id: int) -> OperationRe
 			return OperationResult(
 				False, 'There is no post finish data for this game yet'
 			)
-		
+
 		print('~~~Selecting Post Finish~~~')
 		select_statement = SQL("""
 			SELECT * FROM Game WHERE game_id = %s

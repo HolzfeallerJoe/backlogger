@@ -52,8 +52,6 @@ app = FastAPI(
 	lifespan=lifespan,
 )
 
-# TODO: Setup and change functions to Postgres
-# TODO: All sollte auch query für limit und jump haben - paging
 # TODO: Error handling needs to be better / Better HTTPExceptions and details and more
 
 
@@ -72,8 +70,8 @@ async def checkDatabaseConnection(request: Request, call_next):
 	summary='Retrieve all games',
 	description='Fetch a list of all games currently stored in the database.',
 )
-def get_games() -> Dict[str, List[Game]]:
-	res = get_all_games(app.state.connection)
+def get_games(skip: int = 0, limit: int = 100) -> Dict[str, List[Game]]:
+	res = get_all_games(app.state.connection, skip, limit)
 
 	if not res.success or not res.data:
 		raise HTTPException(status_code=404, detail='No Games found')
