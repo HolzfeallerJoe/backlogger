@@ -1,15 +1,17 @@
-# backlogger
-An app to track your backlog with
+# Backlogger
+
+A web interface for tracking your backlog.  
+Inspired by the Backlog project from [DarylTalksGames](https://www.youtube.com/@DarylTalksGames).
 
 **Backend**
-- fastapi
-- psycopg
+- FastAPI
+- Psycopg
 
 **Database**
-- Postgres
+- PostgreSQL
 
 **Frontend**
 - Jinja2
-- Tailwind CDN
+- Tailwind (via CDN)
 
-You can just use the docker compose to run it locally
+You can use Docker Compose to run it locally.
