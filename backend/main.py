@@ -73,8 +73,22 @@ async def checkDatabaseConnection(request: Request, call_next):
 def get_games(skip: int = 0, limit: int = 100) -> Dict[str, List[Game]]:
 	res = get_all_games(app.state.connection, skip, limit)
 
-	if not res.success or not res.data:
-		raise HTTPException(status_code=404, detail='No Games found')
+	if not res.success:
+		raise HTTPException(
+			status_code=500,
+			detail={'error': 'DatabaseError', 'message': res.message},
+		)
+
+	if not res.data:
+		raise HTTPException(
+			status_code=404,
+			detail={
+				'error': 'NotFound',
+				'message': 'No games found',
+				'skip': skip,
+				'limit': limit,
+			},
+		)
 
 	return {'games': res.data}
 
@@ -89,8 +103,16 @@ def get_games(skip: int = 0, limit: int = 100) -> Dict[str, List[Game]]:
 def post_game(game: Game) -> Dict[str, int]:
 	res = add_game(app.state.connection, game)
 
-	if not res.success or not res.data:
-		raise HTTPException(status_code=409, detail='Game could not be created')
+	if not res.success:
+		status = 409 if 'exists' in res.message.lower() else 500
+		raise HTTPException(
+			status_code=status,
+			detail={
+				'error': 'Conflict' if status == 409 else 'DatabaseError',
+				'message': res.message,
+				'game': game.name,
+			},
+		)
 
 	return {'posted': res.data}
 
@@ -106,8 +128,25 @@ def get_game(
 ) -> Dict[str, Game]:
 	res = get_game_by_id(app.state.connection, game_id)
 
-	if not res.success or not res.data:
-		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
+	if not res.success:
+		raise HTTPException(
+			status_code=500,
+			detail={
+				'error': 'DatabaseError',
+				'message': res.message,
+				'game_id': game_id,
+			},
+		)
+
+	if not res.data:
+		raise HTTPException(
+			status_code=404,
+			detail={
+				'error': 'NotFound',
+				'message': f'No game found with id {game_id}',
+				'game_id': game_id,
+			},
+		)
 
 	return {'game': res.data}
 
@@ -124,7 +163,16 @@ def delete_one_game(
 	res = delete_game(app.state.connection, game_id)
 
 	if not res.success:
-		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
+		# If service told us no rows → 404, else 500
+		status = 404 if 'not found' in res.message.lower() else 500
+		raise HTTPException(
+			status_code=status,
+			detail={
+				'error': 'NotFound' if status == 404 else 'DatabaseError',
+				'message': res.message,
+				'game_id': game_id,
+			},
+		)
 
 	return {'deleted': res.success}
 
@@ -142,8 +190,25 @@ def get_post_finish(
 ) -> Dict[str, PostFinish]:
 	res = get_post_finish_game_id(app.state.connection, game_id)
 
-	if not res.success or not res.data:
-		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
+	if not res.success:
+		# distinguish “no data yet” vs real exception
+		if isinstance(res.data, Exception):
+			raise HTTPException(
+				status_code=500,
+				detail={
+					'error': 'DatabaseError',
+					'message': str(res.data),
+					'game_id': game_id,
+				},
+			)
+		raise HTTPException(
+			status_code=404,
+			detail={
+				'error': 'NotFound',
+				'message': res.message,
+				'game_id': game_id,
+			},
+		)
 	return {'Post Finish': res.data}
 
 
@@ -162,6 +227,23 @@ def patch_post_finish(
 	res = add_post_finish_stats(app.state.connection, pfg, game_id)
 
 	if not res.success:
-		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
+		# conflict if data already exists, else internal error
+		if isinstance(res.data, Exception):
+			raise HTTPException(
+				status_code=500,
+				detail={
+					'error': 'DatabaseError',
+					'message': str(res.data),
+					'game_id': game_id,
+				},
+			)
+		raise HTTPException(
+			status_code=409,
+			detail={
+				'error': 'Conflict',
+				'message': res.message,
+				'game_id': game_id,
+			},
+		)
 
 	return {'patched': res.success}
