@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:13.21
+    restart: always
+    environment:
+      POSTGRES_USER: logger
+      POSTGRES_PASSWORD: theBacklogIsLongerThanMyWholeLife
+      POSTGRES_DB: backlogger
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  jinja-app:
+    build:
+      context: ./jinja-app
+      dockerfile: backend/Dockerfile
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "8001:8001"
+
+volumes:
+  db_data:

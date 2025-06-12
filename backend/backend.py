@@ -18,16 +18,16 @@ async def lifespan(app: FastAPI):
 		case 'postgres':
 			app.state.impl = postgres_service
 			app.state.connection = psycopg.connect(
-				dbname='your_db',
-				user='your_user',
-				password='your_password',
+				dbname='backlogger',
+				user='logger',
+				password='theBacklogIsLongerThanMyWholeLife',
 				host='localhost',
 				port='5432',
 			)
 			print('postgres')
 		case 'sqlite' | _:
 			app.state.impl = sqlite_service
-			if not exists('./game.db'):
+			if not exists('game.db'):
 				create_connection = sqlite3.connect('game.db')
 				app.state.impl.create_database(create_connection)
 				create_connection.close()
@@ -47,6 +47,7 @@ app = FastAPI(
 	lifespan=lifespan,
 )
 
+# TODO: Setup and change functions to Postgres
 # TODO: All sollte auch query für limit und jump haben - paging
 # TODO: Error handling needs to be better / Better HTTPExceptions and details and more
 
