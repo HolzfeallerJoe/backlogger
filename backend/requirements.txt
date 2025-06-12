@@ -1,3 +1,2 @@
 fastapi[standard]
-asyncpg
-SQLAlchemy
+psycopg[binary]

@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlite3 import Connection
 from typing import Optional, NamedTuple
 
-from backend.game import Game, PostFinish
+from game import Game, PostFinish
 
 
 class OperationResult(NamedTuple):

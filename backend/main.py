@@ -1,38 +1,35 @@
 import os
-import sqlite3
 from contextlib import asynccontextmanager
-from os.path import exists
 from typing import Dict, List
 
 import psycopg
 from fastapi import FastAPI, HTTPException, Path
 
-import postgres_service
-import sqlite_service
+from postgres_service import (
+	get_all_games,
+	add_game,
+	get_game_by_id,
+	delete_game,
+	get_post_finish_game_id,
+	add_post_finish_stats,
+)
 from game import PostFinish, Game
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-	database_type = os.getenv('DATABASE').strip()
-	match database_type:
-		case 'postgres':
-			app.state.impl = postgres_service
-			app.state.connection = psycopg.connect(
-				dbname='backlogger',
-				user='logger',
-				password='theBacklogIsLongerThanMyWholeLife',
-				host='localhost',
-				port='5432',
-			)
-			print('postgres')
-		case 'sqlite' | _:
-			app.state.impl = sqlite_service
-			if not exists('game.db'):
-				create_connection = sqlite3.connect('game.db')
-				app.state.impl.create_database(create_connection)
-				create_connection.close()
-			app.state.connection = sqlite3.connect('game.db', check_same_thread=False)
-			app.state.connection.row_factory = sqlite3.Row
+	database_host = os.getenv('POSTGRES_HOST').strip()
+	database_username = os.getenv('POSTGRES_USER').strip()
+	database_password = os.getenv('POSTGRES_PASSWORD').strip()
+	database_name = os.getenv('POSTGRES_DB').strip()
+
+	app.state.connection = psycopg.connect(
+		dbname=database_name,
+		user=database_username,
+		password=database_password,
+		host=database_host,
+		port='5432',
+	)
+	print('postgres')
 	yield
 	# Code that executes after finish
 	app.state.connection.close()
@@ -59,7 +56,7 @@ app = FastAPI(
 	description='Fetch a list of all games currently stored in the database.',
 )
 def get_games() -> Dict[str, List[Game]]:
-	res = app.state.impl.get_all_games(app.state.connection)
+	res = get_all_games(app.state.connection)
 
 	if not res.success or not res.data:
 		raise HTTPException(status_code=404, detail='No Games found')
@@ -75,7 +72,7 @@ def get_games() -> Dict[str, List[Game]]:
 	description='Add a new game to the database. Returns the auto-generated game_id.',
 )
 def post_game(game: Game) -> Dict[str, int]:
-	res = app.state.impl.add_game(app.state.connection, game)
+	res = add_game(app.state.connection, game)
 
 	if not res.success or not res.data:
 		raise HTTPException(status_code=409, detail='Game could not be created')
@@ -92,7 +89,7 @@ def post_game(game: Game) -> Dict[str, int]:
 def get_game(
 	game_id: int = Path(..., description='The integer ID of the game to retrieve', ge=1),
 ) -> Dict[str, Game]:
-	res = app.state.impl.get_game_by_id(app.state.connection, game_id)
+	res = get_game_by_id(app.state.connection, game_id)
 
 	if not res.success or not res.data:
 		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
@@ -109,7 +106,7 @@ def get_game(
 def delete_one_game(
 	game_id: int = Path(..., description='The integer ID of the game to delete', ge=1),
 ) -> Dict[str, bool]:
-	res = app.state.impl.delete_game(app.state.connection, game_id)
+	res = delete_game(app.state.connection, game_id)
 
 	if not res.success:
 		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
@@ -128,7 +125,7 @@ def get_post_finish(
 		..., description='The game ID to fetch post-finish data for', ge=1
 	),
 ) -> Dict[str, PostFinish]:
-	res = app.state.impl.get_post_finish_game_id(app.state.connection, game_id)
+	res = get_post_finish_game_id(app.state.connection, game_id)
 
 	if not res.success or not res.data:
 		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
@@ -147,7 +144,7 @@ def patch_post_finish(
 		..., description='The ID of the game to patch post-finish stats for', ge=1
 	),
 ) -> Dict[str, bool]:
-	res = app.state.impl.add_post_finish_stats(app.state.connection, pfg, game_id)
+	res = add_post_finish_stats(app.state.connection, pfg, game_id)
 
 	if not res.success:
 		raise HTTPException(status_code=404, detail=f'No Game with the id {game_id} found')
