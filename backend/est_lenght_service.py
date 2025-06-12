@@ -4,7 +4,9 @@ from howlongtobeatpy import HowLongToBeat, HowLongToBeatEntry
 
 
 def getEst_lenght(name: str) -> int | None:
-	ests: List[HowLongToBeatEntry] = HowLongToBeat().search(name, similarity_case_sensitive=False)
+	ests: List[HowLongToBeatEntry] = HowLongToBeat().search(
+		name, similarity_case_sensitive=False
+	)
 
 	if ests:
 		for est in ests:
