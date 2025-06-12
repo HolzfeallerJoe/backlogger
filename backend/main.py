@@ -4,7 +4,8 @@ from typing import Dict, List
 
 import psycopg
 from fastapi import FastAPI, HTTPException, Path, Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, HTMLResponse
+from starlette.templating import Jinja2Templates
 
 from est_lenght_service import getEst_lenght
 from postgres_service import (
@@ -52,6 +53,7 @@ app = FastAPI(
 	),
 	lifespan=lifespan,
 )
+templates = Jinja2Templates(directory='frontend')
 
 
 @app.middleware('http')
@@ -247,3 +249,13 @@ def patch_post_finish(
 		)
 
 	return {'patched': res.success}
+
+
+@app.get('/', response_class=HTMLResponse)
+@app.get('/index', response_class=HTMLResponse)
+def show_index(request: Request) -> HTMLResponse:
+	result = get_all_games(app.state.connection, skip=0, limit=100)
+	games = result.data if result.success and result.data else []
+	return templates.TemplateResponse(
+		'index.html', {'request': request, 'title': 'My Game Backlog', 'games': games}
+	)
