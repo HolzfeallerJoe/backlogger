@@ -15,5 +15,18 @@ Inspired by the Backlog project from [DarylTalksGames](https://www.youtube.com/@
 **Frontend**
 - Jinja2
 - Tailwind (via CDN)
+- htmx
 
 You can use Docker Compose to run it locally.
+
+## TODO:
+- [ ] post finish site
+- [ ] stats site
+- [ ] game list
+- [ ] login / auth
+- [ ] profil section in index
+- [ ] profil page
+  - profil picture
+  - reset password
+  - name / username
+  - email
