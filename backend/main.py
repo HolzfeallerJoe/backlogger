@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException, Path, Request
 from starlette.responses import JSONResponse, HTMLResponse
 from starlette.templating import Jinja2Templates
 
+from steam_api import search_for_game
 from est_length_service import get_est_length
 from postgres_service import (
 	get_all_games,
@@ -312,6 +313,15 @@ def show_stats(request: Request) -> HTMLResponse:
 	return templates.TemplateResponse(
 		'404.html', {'request': request, 'title': 'Backlogger'}
 	)
+
+
+@app.get('/search_game', response_class=HTMLResponse)
+async def search(game: str):
+	options = []
+	res = await search_for_game(query=game)
+	for listing in res.items:
+		options.append(f'<option value="{listing.name}">{listing.name}</option>')
+	return ''.join(options)
 
 
 @app.get('/{full_path:path}', response_class=HTMLResponse, tags=['websites'])
