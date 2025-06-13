@@ -9,7 +9,7 @@ from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 
 from steam_api import search_for_game
-from est_length_service import get_est_length
+from how_long_to_beat_service import get_est_length
 from postgres_service import (
 	get_all_games,
 	add_game,
@@ -50,6 +50,7 @@ async def lifespan(app: FastAPI):
 tags_metadata = [
 	{'name': 'games', 'description': 'CRUD operations on your game backlog.'},
 	{'name': 'websites', 'description': 'Frontend HTML endpoints for the Backlogger UI.'},
+	{'name': 'helper', 'description': 'Endpoints that are exposed to help the frontend'},
 ]
 
 app = FastAPI(
@@ -318,7 +319,7 @@ def show_stats(request: Request) -> HTMLResponse:
 	)
 
 
-@app.get('/search_game', response_class=HTMLResponse)
+@app.get('/search_game', response_class=HTMLResponse, tags=['helper'])
 async def search(game: str):
 	options = []
 	res = await search_for_game(query=game)
