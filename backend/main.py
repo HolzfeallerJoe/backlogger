@@ -61,8 +61,9 @@ app = FastAPI(
 	lifespan=lifespan,
 	openapi_tags=tags_metadata,
 )
-templates = Jinja2Templates(directory='frontend')
+
 app.mount('/static', StaticFiles(directory='static'), name='static')
+templates = Jinja2Templates(directory='frontend')
 
 
 @app.middleware('http')

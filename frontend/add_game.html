@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     <link rel="stylesheet"
-          href="static/add_game.css" />
+          href="{{ url_for('static', path='add_game.css') }}" />
     <title>{{ title }}</title>
   </head>
   <body>
