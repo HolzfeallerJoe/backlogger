@@ -288,7 +288,7 @@ def show_index(request: Request) -> HTMLResponse:
 @app.get('/add_game', response_class=HTMLResponse, name='add_game', tags=['websites'])
 def show_add_game(request: Request) -> HTMLResponse:
 	return templates.TemplateResponse(
-		'404.html', {'request': request, 'title': 'Backlogger'}
+		'add_game.html', {'request': request, 'title': 'Backlogger'}
 	)
 
 
