@@ -1,12 +1,12 @@
 const GameDefaults = {
-  name: "",
-  released: false,
-  purchased: false,
-  excitement: 0
+    name: "",
+    released: false,
+    purchased: false,
+    excitement: 0
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    const form        = document.getElementById('add-game-form');
+    const form = document.getElementById('add-game-form');
     const submitBtn = document.getElementById('submit-btn');
 
     function updateColorOnly() {
@@ -19,14 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    form.addEventListener('input',  updateColorOnly);
+    form.addEventListener('input', updateColorOnly);
     form.addEventListener('change', updateColorOnly);
 
     updateColorOnly();
 
 
-    const gameInput   = document.getElementById('game');
-    const dataList    = document.getElementById('game-list');
+    const gameInput = document.getElementById('game');
+    const dataList = document.getElementById('game-list');
 
     gameInput.addEventListener('input', () => {
         const opts = Array.from(dataList.options).map(o => o.value);
@@ -57,23 +57,27 @@ async function send_game(event) {
     };
 
     const postRes = await fetch('/games', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload),
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload),
     });
 
     const container = document.getElementById('alert-container');
     let template;
     if (postRes.ok) {
-      template = document.getElementById('alert-success-template').innerHTML;
+        template = document.getElementById('alert-success-template').innerHTML;
+        form.reset()
+        form.querySelector('#game-list').innerHTML = '';
     } else {
-      let errMsg = 'Could not add game. Please try again.';
-      try {
-        const err = await postRes.json();
-        if (err.detail) errMsg = `${err.detail.error}: ${err.detail.message}`;
-      } catch {}
-      template = document.getElementById('alert-error-template').innerHTML
-              .replace('__ERROR_MESSAGE__', errMsg);
+        let errMsg = 'Could not add game. Please try again.';
+        try {
+            const err = await postRes.json();
+            if (err.detail) errMsg = `${err.detail.error}: ${err.detail.message}`;
+        } catch {}
+        template = document.getElementById('alert-error-template').innerHTML
+            .replace('__ERROR_MESSAGE__', errMsg);
     }
 
     container.innerHTML = template;
