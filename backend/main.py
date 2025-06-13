@@ -5,6 +5,7 @@ from typing import Dict, List
 import psycopg
 from fastapi import FastAPI, HTTPException, Path, Request
 from starlette.responses import JSONResponse, HTMLResponse
+from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 
 from steam_api import search_for_game
@@ -61,6 +62,7 @@ app = FastAPI(
 	openapi_tags=tags_metadata,
 )
 templates = Jinja2Templates(directory='frontend')
+app.mount('/static', StaticFiles(directory='static'), name='static')
 
 
 @app.middleware('http')

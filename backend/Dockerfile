@@ -6,5 +6,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend .
 COPY ../frontend ./frontend
+COPY ../static ./static
 
 CMD ["fastapi", "run", "./main.py"]
