@@ -61,8 +61,9 @@ async def search_for_game(
 		return SteamResponse(resp.get('total'), items)
 
 
-data = asyncio.run(search_for_game('Factorio'))
-for item in data.items:
-	print(item.id)
-	print(item.name)
-	print(item.tiny_image)
+if __name__ == '__main__':
+	data = asyncio.run(search_for_game('Factorio'))
+	for item in data.items:
+		print(item.id)
+		print(item.name)
+		print(item.tiny_image)
