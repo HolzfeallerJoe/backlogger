@@ -1,0 +1,30 @@
+{% macro alert(type='info', title='', message='') %}
+  {%- set classes = {
+    "info": {
+      "bg": "bg-blue-100",
+      "border": "border-blue-400",
+      "text": "text-blue-700"
+    },
+    "success": {
+      "bg": "bg-green-100",
+      "border": "border-green-400",
+      "text": "text-green-700"
+    },
+    "warning": {
+      "bg": "bg-yellow-100",
+      "border": "border-yellow-400",
+      "text": "text-yellow-700"
+    },
+    "danger": {
+      "bg": "bg-red-100",
+      "border": "border-red-400",
+      "text": "text-red-700"
+    }
+  } -%}
+  {%- set c = classes[type] if type in classes else classes['info'] -%}
+  <div class="{{ c.bg }} border {{ c.border }} {{ c.text }} px-4 py-3 rounded-md"
+       role="alert">
+    <strong class="font-bold block">{{ title }}</strong>
+    <span class="block">{{ message }}</span>
+  </div>
+{% endmacro %}

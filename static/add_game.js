@@ -57,10 +57,25 @@ async function send_game(event) {
     };
 
     const postRes = await fetch('/games', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload),
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
     });
+
+    const container = document.getElementById('alert-container');
+    let template;
+    if (postRes.ok) {
+      template = document.getElementById('alert-success-template').innerHTML;
+    } else {
+      let errMsg = 'Could not add game. Please try again.';
+      try {
+        const err = await postRes.json();
+        if (err.detail) errMsg = `${err.detail.error}: ${err.detail.message}`;
+      } catch {}
+      template = document.getElementById('alert-error-template').innerHTML
+              .replace('__ERROR_MESSAGE__', errMsg);
+    }
+
+    container.innerHTML = template;
+    setTimeout(() => container.innerHTML = '', 5000);
 }

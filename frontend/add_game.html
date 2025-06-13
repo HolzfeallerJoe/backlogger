@@ -9,6 +9,7 @@
     <title>{{ title }}</title>
   </head>
   <body>
+    {% from 'components/alert.html' import alert %}
     {% include 'components/nav_bar.html' %}
 
     <div class="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
@@ -130,6 +131,24 @@
         </div>
       </form>
     </div>
+    <div id="alert-container"
+         class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-4">
+    </div>
+
+    <script type="text/template" id="alert-success-template">
+    {{ alert(
+         type='success',
+         title='Success!',
+         message='Your game has been added to the backlog.'
+       ) }}
+    </script>
+    <script type="text/template" id="alert-error-template">
+    {{ alert(
+         type='danger',
+         title='Oops!',
+         message='__ERROR_MESSAGE__'
+       ) }}
+    </script>
     <script src="{{ url_for('static', path='add_game.js') }}"></script>
   </body>
 </html>
