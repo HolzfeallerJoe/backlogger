@@ -30,3 +30,6 @@ You can use Docker Compose to run it locally.
   - reset password
   - name / username
   - email
+- [ ] flesh out all sides
+  - images
+  - text
