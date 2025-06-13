@@ -1,10 +1,3 @@
-const GameDefaults = {
-    name: "",
-    released: false,
-    purchased: false,
-    excitement: 0
-};
-
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('add-game-form');
     const submitBtn = document.getElementById('submit-btn');
