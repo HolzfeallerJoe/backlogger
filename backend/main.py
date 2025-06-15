@@ -329,12 +329,21 @@ def show_stats(request: Request) -> HTMLResponse:
 
 
 @app.get('/search_game', response_class=HTMLResponse, tags=['helper'])
-async def search(game: str):
+async def search_game(game: str):
 	options = []
 	res = await search_for_game(query=game)
 	for listing in res.items:
 		options.append(f'<option value="{listing.name}">{listing.name}</option>')
 	return ''.join(options)
+
+
+@app.get('/game_image', response_class=JSONResponse, tags=['helper'])
+async def game_image(game: str) -> JSONResponse:
+	res = await search_for_game(query=game)
+	for listing in res.items:
+		if listing.name == game:
+			return {'image_path': listing.tiny_image}
+	return {'image_path': None}
 
 
 @app.get('/{full_path:path}', response_class=HTMLResponse, tags=['websites'])
