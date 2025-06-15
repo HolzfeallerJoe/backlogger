@@ -4,6 +4,7 @@ from typing import Dict, List
 
 import psycopg
 from fastapi import FastAPI, HTTPException, Path, Request
+from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse, HTMLResponse
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
@@ -282,10 +283,8 @@ async def games_not_found(request: Request):
 
 @app.get('/index', response_class=HTMLResponse, name='index', tags=['websites'])
 def show_index(request: Request) -> HTMLResponse:
-	result = get_all_games(app.state.connection, skip=0, limit=100)
-	games = result.data if result.success and result.data else []
 	return templates.TemplateResponse(
-		'index.html', {'request': request, 'title': 'Backlogger', 'games': games}
+		'index.html', {'request': request, 'title': 'Backlogger'}
 	)
 
 
@@ -307,8 +306,18 @@ def show_game_list(request: Request) -> HTMLResponse:
 	'/post_finish', response_class=HTMLResponse, name='post_finish', tags=['websites']
 )
 def show_post_finish(request: Request) -> HTMLResponse:
+	result = get_all_games(app.state.connection, skip=0, limit=100)
+	games = result.data if result.success and result.data else []
+
+	games = jsonable_encoder(games)
+
 	return templates.TemplateResponse(
-		'post_finish.html', {'request': request, 'title': 'Backlogger'}
+		'post_finish.html',
+		{
+			'request': request,
+			'title': 'Backlogger',
+			'games': games,
+		},
 	)
 
 

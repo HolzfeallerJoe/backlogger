@@ -63,7 +63,10 @@ async function send_game(event) {
         template = document.getElementById('alert-success-template').innerHTML;
         form.reset()
         const gameInput = form.querySelector('#game');
-        gameInput.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, cancelable: true }));
+        gameInput.dispatchEvent(new KeyboardEvent('keyup', {
+            bubbles: true,
+            cancelable: true
+        }));
     } else {
         let errMsg = 'Could not add game. Please try again.';
         try {
