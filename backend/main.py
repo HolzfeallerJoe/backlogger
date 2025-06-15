@@ -299,7 +299,7 @@ def show_add_game(request: Request) -> HTMLResponse:
 @app.get('/game_list', response_class=HTMLResponse, name='game_list', tags=['websites'])
 def show_game_list(request: Request) -> HTMLResponse:
 	return templates.TemplateResponse(
-		'404.html', {'request': request, 'title': 'Backlogger'}
+		'game_list.html', {'request': request, 'title': 'Backlogger'}
 	)
 
 
@@ -308,14 +308,14 @@ def show_game_list(request: Request) -> HTMLResponse:
 )
 def show_post_finish(request: Request) -> HTMLResponse:
 	return templates.TemplateResponse(
-		'404.html', {'request': request, 'title': 'Backlogger'}
+		'post_finish.html', {'request': request, 'title': 'Backlogger'}
 	)
 
 
 @app.get('/stats', response_class=HTMLResponse, name='stats', tags=['websites'])
 def show_stats(request: Request) -> HTMLResponse:
 	return templates.TemplateResponse(
-		'404.html', {'request': request, 'title': 'Backlogger'}
+		'stats.html', {'request': request, 'title': 'Backlogger'}
 	)
 
 
