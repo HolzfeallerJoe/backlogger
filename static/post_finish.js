@@ -1,36 +1,105 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const raw = document.getElementById('games-data').textContent;
-    const games = JSON.parse(raw);
-
+    const games = JSON.parse(
+        document.getElementById('games-data').textContent
+    );
     const input = document.getElementById('game');
-    const nameEl = document.getElementById('card-game-name');
-    const estVal = document.getElementById('card-est-length-value');
-    const releasedVal = document.getElementById('card-released-value');
-    const purchasedVal = document.getElementById('card-purchased-value');
-    const excitementVal = document.getElementById('card-excitement-value');
+
+    const titleEl = document.getElementById('card-game-title');
+    const imgEl = document.getElementById('card-game-image');
+    const fallbackEl = document.getElementById('card-image-fallback');
+    const badgeEl = document.getElementById('card-est-badge');
+    const subtitleEl = document.getElementById('card-excitement-value');
+    const releasedBlock = document.getElementById('card-released-block');
+    const purchasedBlock = document.getElementById('card-purchased-block');
+
+    function setTextInactive() {
+        titleEl.classList.replace('font-semibold', 'font-medium');
+        titleEl.classList.replace('text-gray-900', 'text-gray-400');
+        subtitleEl.classList.replace('text-gray-500', 'text-gray-400');
+    }
+
+    function setTextActive() {
+        titleEl.classList.replace('font-medium', 'font-semibold');
+        titleEl.classList.replace('text-gray-400', 'text-gray-900');
+        subtitleEl.classList.replace('text-gray-400', 'text-gray-500');
+    }
+
+    function styleBlock(block, state) {
+        const icon = block.querySelector('svg');
+        const label = block.querySelector('span');
+
+        block.classList.remove(
+            'bg-gray-50', 'bg-red-100', 'bg-green-100',
+            'opacity-50', 'pointer-events-none'
+        );
+        icon.classList.remove('text-gray-400', 'text-red-800', 'text-green-800');
+        label.classList.remove(
+            'text-gray-700', 'text-red-800', 'text-green-800',
+            'font-medium', 'font-semibold'
+        );
+
+        if (state === 'active') {
+            block.classList.add('bg-green-100');
+            icon.classList.add('text-green-800');
+            label.classList.add('text-green-800', 'font-semibold');
+        } else if (state === 'inactive') {
+            block.classList.add('bg-red-100');
+            icon.classList.add('text-red-800');
+            label.classList.add('text-red-800', 'font-semibold');
+        } else {
+            block.classList.add('bg-gray-50', 'opacity-50', 'pointer-events-none');
+            icon.classList.add('text-gray-400');
+            label.classList.add('text-gray-700', 'font-medium');
+        }
+    }
 
     function showNoGame() {
-        nameEl.textContent = 'No game selected';
-        estVal.textContent = '-';
-        releasedVal.textContent = '-';
-        purchasedVal.textContent = '-';
-        excitementVal.textContent = '-';
+        titleEl.textContent = 'No game selected';
+        imgEl.src = '';
+        badgeEl.textContent = '–';
+        subtitleEl.textContent = '–';
+        setTextInactive();
+        styleBlock(releasedBlock, 'none');
+        styleBlock(purchasedBlock, 'none');
+        imgEl.classList.add('hidden');
+        fallbackEl.classList.add('hidden');
     }
 
     showNoGame();
 
-    input.addEventListener('input', () => {
-        const val = input.value;
-        const g = games.find(x => x.name === val);
+    input.addEventListener('input', async () => {
+        const g = games.find(x => x.name === input.value);
         if (!g) {
             showNoGame();
             return;
         }
 
-        nameEl.textContent = g.name;
-        estVal.textContent = `${g.est_length} hour${g.est_length !== 1 ? 's' : ''}`;
-        releasedVal.textContent = g.released ? 'Yes' : 'No';
-        purchasedVal.textContent = g.purchased ? 'Yes' : 'No';
-        excitementVal.textContent = g.excitement;
+        setTextActive();
+        titleEl.textContent = g.name;
+        badgeEl.textContent = g.est_length ? `${g.est_length}h` : '–';
+        subtitleEl.textContent = `Excitement: ${g.excitement}/10`;
+
+        try {
+            const res = await fetch(
+                `/game_image?game=${encodeURIComponent(g.name)}`
+            );
+            const {
+                image_path
+            } = await res.json();
+
+            if (image_path) {
+                imgEl.src = image_path;
+                imgEl.classList.remove('hidden');
+                fallbackEl.classList.add('hidden');
+            } else {
+                throw new Error('no image');
+            }
+        } catch {
+            imgEl.classList.add('hidden');
+            fallbackEl.classList.remove('hidden');
+        }
+
+        styleBlock(releasedBlock, g.released ? 'active' : 'inactive');
+        styleBlock(purchasedBlock, g.purchased ? 'active' : 'inactive');
     });
 });

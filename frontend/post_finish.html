@@ -21,7 +21,9 @@
                 A better workflow
               </p>
               <p class="mt-6 text-lg/8 text-gray-600">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Maiores impedit perferendis suscipit eaque, iste dolor
+                cupiditate blanditiis ratione.
               </p>
               <dl class="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 lg:max-w-none">
                 <div class="relative pl-9">
@@ -76,35 +78,75 @@
 
           <div class="mt-2.5 relative group">
             {% include 'components/combo_box.html' %}
+
             <div id="game-card"
-                 class="bg-gray-50 rounded-lg shadow p-6">
-              <h3 id="card-game-name"
-                  class="text-2xl font-semibold text-gray-900 mb-4">
-                No game selected
-              </h3>
-              <ul class="space-y-2 text-gray-700">
-                <li>
-                  <span class="font-medium">Estimated playtime:</span>
-                  <span id="card-est-length-value"></span>
-                </li>
-                <li>
-                  <span class="font-medium">Released:</span>
-                  <span id="card-released-value">—</span>
-                </li>
-                <li>
-                  <span class="font-medium">Purchased:</span>
-                  <span id="card-purchased-value">—</span>
-                </li>
-                <li>
-                  <span class="font-medium">Excitement:</span>
-                  <span id="card-excitement-value">—</span>/10
-                </li>
-              </ul>
+                 class="bg-white shadow rounded-lg overflow-hidden">
+              <div class="px-6 py-5 flex items-center justify-between">
+                <div>
+                  <h3 id="card-game-name"
+                      class="inline-flex items-center space-x-3">
+                    <span id="card-game-title"
+                          class="text-lg font-medium text-gray-900">
+                      No game selected
+                    </span>
+                    <span id="card-est-badge"
+                          class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-800">
+                      –
+                    </span>
+                  </h3>
+                  <p id="card-excitement-value"
+                     class="mt-1 text-sm text-gray-500">
+                    –
+                  </p>
+                </div>
+
+                <div id="card-image-wrapper"
+                     class="w-[231px] h-[87px] bg-gray-100 rounded-md flex items-center justify-center">
+                  <img id="card-game-image"
+                       class="max-w-full max-h-full hidden"
+                       src=""
+                       alt="Game thumbnail" />
+                  <span id="card-image-fallback"
+                        class="text-sm text-gray-500 hidden">
+                    No image found
+                  </span>
+                </div>
+              </div>
+
+              <div class="border-t border-gray-200 px-6 py-4">
+                <div class="flex space-x-4">
+                  <div id="card-released-block"
+                       class="flex-1 flex items-center px-4 py-2 rounded-md">
+                    <svg class="h-5 w-5 mr-2"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10m-5 0v6m-7-1h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v7a2 2 0 002 2z" />
+                    </svg>
+                    <span>Released</span>
+                  </div>
+
+                  <div id="card-purchased-block"
+                       class="flex-1 flex items-center px-4 py-2 rounded-md">
+                    <svg class="h-5 w-5 mr-2"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.293 2.586a1 1 0 00.894 1.414H17m-10 0V17a1 1 0 001 1h10a1 1 0 001-1v-2m-12 0h12" />
+                    </svg>
+                    <span>Purchased</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
+
     <script type="application/json" id="games-data">
       {{ games | tojson }}
     </script>
