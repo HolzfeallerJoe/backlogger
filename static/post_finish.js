@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const releasedBlock = document.getElementById('card-released-block');
     const purchasedBlock = document.getElementById('card-purchased-block');
 
-    const starLabels = Array.from(document.querySelectorAll('label[for^="rating-"]'));
-
     function setTextInactive() {
         titleEl.classList.replace('font-semibold', 'font-medium');
         titleEl.classList.replace('text-gray-900', 'text-gray-400');
@@ -67,38 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fallbackEl.classList.add('hidden');
     }
 
-    function updateStars() {
-        const sel = parseInt(
-            document.querySelector('input[name="rating"]:checked')?.value || 0,
-            10
-        );
-
-        starLabels.forEach(label => {
-            const val = Number(label.htmlFor.split('-')[1]);
-            const svg = label.querySelector('svg');
-            const path = svg.querySelector('path');
-
-            svg.classList.remove('text-yellow-400');
-            path.setAttribute('stroke-width', '1');
-
-            if (val < sel) {
-
-                svg.classList.remove('text-gray-300');
-                svg.classList.add('text-yellow-300');
-            } else {
-                svg.classList.remove('text-yellow-300');
-                svg.classList.add('text-gray-300');
-            }
-
-            if (val === sel) {
-                path.setAttribute('stroke-width', '4');
-                svg.classList.remove('text-yellow-300');
-                svg.classList.remove('text-gray-300');
-                svg.classList.add('text-yellow-400');
-            }
-        });
-    }
-
     document
         .querySelectorAll('input[name="rating"]')
         .forEach(radio => radio.addEventListener('change', updateStars));
@@ -149,6 +115,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+ function updateStars() {
+        const starLabels = Array.from(document.querySelectorAll('label[for^="rating-"]'));
+
+        const sel = parseInt(
+            document.querySelector('input[name="rating"]:checked')?.value || 1,
+            10
+        );
+
+        starLabels.forEach(label => {
+            const val = Number(label.htmlFor.split('-')[1]);
+            const svg = label.querySelector('svg');
+            const path = svg.querySelector('path');
+
+            svg.classList.remove('text-yellow-400');
+            path.setAttribute('stroke-width', '1');
+
+            if (val < sel) {
+
+                svg.classList.remove('text-gray-300');
+                svg.classList.add('text-yellow-300');
+            } else {
+                svg.classList.remove('text-yellow-300');
+                svg.classList.add('text-gray-300');
+            }
+
+            if (val === sel) {
+                path.setAttribute('stroke-width', '4');
+                svg.classList.remove('text-yellow-300');
+                svg.classList.remove('text-gray-300');
+                svg.classList.add('text-yellow-400');
+            }
+        });
+    }
+
+// TODO: VALIDATION
+// TODO: Better duration - frontend too
+// TODO: FILTER GAMES THAT ALREADY HAVE POST FINISH DATA
+
 async function send_post_finish(event) {
     event.preventDefault();
     const games = JSON.parse(
@@ -184,6 +188,7 @@ async function send_post_finish(event) {
         template = document.getElementById('alert-success-template').innerHTML
             .replace('__SUCCESS_MESSAGE__', `Your post finish thoughs have been added to ${game.name}`);
         form.reset()
+        updateStars()
         gameInput.dispatchEvent(new KeyboardEvent('keyup', {
             bubbles: true,
             cancelable: true
