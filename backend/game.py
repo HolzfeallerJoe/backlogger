@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field, field_validator
 
 NonNegativeInt = Annotated[int, Field(ge=0, description='An integer ≥ 0')]
 
-Rating0to10 = Annotated[
-	int, Field(ge=0, le=10, description='A rating between 0 and 10')
+Rating1to10 = Annotated[
+	int, Field(ge=1, le=10, description='A rating between 1 and 10')
 ]
 
 NonEmptyStr = Annotated[str, Field(min_length=1, description='A non-empty string')]
@@ -47,8 +47,8 @@ class Game(StrippingModel):
 	purchased: bool = Field(
 		..., description='Whether you have already purchased the game'
 	)
-	excitement: Rating0to10 = Field(
-		..., description='How excited you are about this game (0–10)'
+	excitement: Rating1to10 = Field(
+		..., description='How excited you are about this game (1–10)'
 	)
 
 
@@ -67,7 +67,7 @@ class PostFinish(StrippingModel):
 			'Combine a number with day/week/month/year.'
 		),
 	)
-	rating: Rating0to10 = Field(..., description='Final personal rating (0–10)')
+	rating: Rating1to10 = Field(..., description='Final personal rating (1–10)')
 	worth: bool = Field(..., description='True if you consider the game worth your time')
 	reason: Optional[str] = Field(
 		None, description='Optional explanation for everything you want'
