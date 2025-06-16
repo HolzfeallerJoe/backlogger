@@ -12,7 +12,9 @@
     <div class="overflow-hidden bg-white py-24 sm:py-32">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
-          <div class="lg:pt-4 lg:pr-8">
+          <form id="add-post-finish-form"
+                onsubmit="send_post_finish(event)"
+                class="lg:pt-4 lg:pr-8">
             <div class="lg:max-w-lg">
               <p class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
                 Enter Post Finish Statistics
@@ -230,7 +232,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </form>
 
           <div class="mt-2.5 relative group">
             {% include 'components/combo_box.html' %}
@@ -298,7 +300,24 @@
         </div>
       </div>
     </div>
+        <div id="alert-container"
+         class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-4">
+    </div>
 
+    <script type="text/template" id="alert-success-template">
+    {{ alert(
+         type='success',
+         title='Success!',
+         message='__SUCCESS_MESSAGE__'
+       ) }}
+    </script>
+    <script type="text/template" id="alert-error-template">
+    {{ alert(
+         type='danger',
+         title='Oops!',
+         message='__ERROR_MESSAGE__'
+       ) }}
+    </script>
     <script type="application/json" id="games-data">
       {{ games | tojson }}
     </script>
