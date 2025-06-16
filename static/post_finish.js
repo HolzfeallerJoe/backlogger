@@ -87,7 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const games = JSON.parse(
         document.getElementById('games-data').textContent
     );
-    const input = document.getElementById('game');
+    const gameInput = document.getElementById('game');
+    const form = document.getElementById('add-post-finish-form');
+    const durationInput = document.getElementById('duration');
 
     document
         .querySelectorAll('input[name="rating"]')
@@ -95,9 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     CardGameUI.showNoGame();
     updateStars();
+    updatePeriodLabels();
 
-    input.addEventListener('input', async () => {
-        const g = games.find(x => x.name === input.value);
+    gameInput.addEventListener('input', async () => {
+        const g = games.find(x => x.name === gameInput.value);
         if (!g) {
             CardGameUI.showNoGame();
             return;
@@ -129,14 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
         CardGameUI.styleBlock('purchased', g.purchased ? 'active' : 'inactive');
     });
 
-    const form = document.getElementById('add-post-finish-form');
-
     form.addEventListener('submit', (e) => {
         if (!form.checkValidity()) {
             e.preventDefault();
             form.reportValidity();
         }
     });
+
+    durationInput.addEventListener('input', updatePeriodLabels);
 });
 
 function updateStars() {
@@ -173,8 +176,18 @@ function updateStars() {
     });
 }
 
+function updatePeriodLabels() {
+    const durationInput = document.getElementById('duration');
+    const periodSelect = document.getElementById('period');
+    const n = parseInt(durationInput.value, 10);
+    Array.from(periodSelect.options).forEach(opt => {
+        const txt = opt.textContent.trim();
+        const base = txt.replace(/s$/i, '');
+        opt.textContent = n === 1 ? base : base + 's';
+    });
+}
+
 // TODO: VALIDATION
-// TODO: Better duration - frontend too
 
 async function send_post_finish(event) {
     event.preventDefault();
@@ -187,11 +200,15 @@ async function send_post_finish(event) {
     const form = document.getElementById('add-post-finish-form')
     const formData = new FormData(form);
 
+    const rawNum = parseInt(formData.get('duration'), 10) || 1;
+    let rawPeriod = formData.get('period').toLowerCase();
+    if (rawNum === 1) rawPeriod = rawPeriod.replace(/s$/, '');
+
     const payload = {
         dropped: formData.get('dropped') === 'on',
         credits: formData.get('credits') === 'on',
         time_played: parseInt(formData.get('time_played')),
-        duration: `${formData.get('duration')} ${formData.get('period').toLowerCase()}`,
+        duration: `${formData.get('duration')} ${rawPeriod}`,
         rating: parseInt(formData.get('rating')),
         worth: formData.get('credits') === 'on',
         reason: formData.get('reason') || '',
