@@ -175,7 +175,6 @@ function updateStars() {
 
 // TODO: VALIDATION
 // TODO: Better duration - frontend too
-// TODO: FILTER GAMES THAT ALREADY HAVE POST FINISH DATA
 
 async function send_post_finish(event) {
     event.preventDefault();

@@ -308,6 +308,8 @@ def show_game_list(request: Request) -> HTMLResponse:
 def show_post_finish(request: Request) -> HTMLResponse:
 	result = get_all_games(app.state.connection, skip=0, limit=100)
 	games = result.data if result.success and result.data else []
+	print(games)
+	games = [game for game in games if not game.get('finished_at')]
 
 	games = jsonable_encoder(games)
 
