@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const releasedBlock = document.getElementById('card-released-block');
     const purchasedBlock = document.getElementById('card-purchased-block');
 
+    const starLabels = Array.from(document.querySelectorAll('label[for^="rating-"]'));
+    const starInputs = document.querySelectorAll('input[name="rating"]');
+
     function setTextInactive() {
         titleEl.classList.replace('font-semibold', 'font-medium');
         titleEl.classList.replace('text-gray-900', 'text-gray-400');
@@ -65,7 +68,44 @@ document.addEventListener('DOMContentLoaded', () => {
         fallbackEl.classList.add('hidden');
     }
 
+    function updateStars() {
+        const sel = parseInt(
+            document.querySelector('input[name="rating"]:checked')?.value || 0,
+            10
+        );
+
+        starLabels.forEach(label => {
+            const val = Number(label.htmlFor.split('-')[1]);
+            const svg = label.querySelector('svg');
+            const path = svg.querySelector('path');
+
+            svg.classList.remove('text-yellow-400');
+            path.setAttribute('stroke-width', '1');
+
+            if (val < sel) {
+
+                svg.classList.remove('text-gray-300');
+                svg.classList.add('text-yellow-300');
+            } else {
+                svg.classList.remove('text-yellow-300');
+                svg.classList.add('text-gray-300');
+            }
+
+            if (val === sel) {
+                path.setAttribute('stroke-width', '4');
+                svg.classList.remove('text-yellow-300');
+                svg.classList.remove('text-gray-300');
+                svg.classList.add('text-yellow-400');
+            }
+        });
+    }
+
+    document
+        .querySelectorAll('input[name="rating"]')
+        .forEach(radio => radio.addEventListener('change', updateStars));
+
     showNoGame();
+    updateStars();
 
     input.addEventListener('input', async () => {
         const g = games.find(x => x.name === input.value);
