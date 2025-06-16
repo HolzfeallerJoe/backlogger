@@ -93,7 +93,8 @@
                          name="time_played"
                          class="block w-16 px-2 py-1 text-center text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 sm:text-sm/6 ml-auto"
                          min="0"
-                         placeholder="0" />
+                         placeholder="0"
+                         required />
                 </div>
 
                 <div class="inline-flex items-center space-x-2">
@@ -117,14 +118,13 @@
                            name="duration"
                            class="w-16 px-2 py-1 text-center text-gray-900 placeholder-gray-400 border-none focus:outline-none sm:text-sm"
                            min="0"
-                           placeholder="0" />
+                           placeholder="0"
+                           required />
 
                     <select id="period"
                             name="period"
-                            class="px-2 py-1 text-gray-900 bg-white border-none focus:outline-none sm:text-sm">
-                      <option>
-                        Hours
-                      </option>
+                            class="px-2 py-1 text-gray-900 bg-white border-none focus:outline-none sm:text-sm"
+                            required>
                       <option>
                         Days
                       </option>
@@ -155,7 +155,8 @@
                              value="1"
                              id="rating-1"
                              checked
-                             class="sr-only" />
+                             class="sr-only"
+                             required />
                       {% for i in range(1, 11) %}
                         <input type="radio"
                                name="rating"
@@ -226,7 +227,7 @@
                 <div class="sm:col-span-2">
                   <button type="submit"
                           id="post-finish-submit"
-                          class="w-full inline-flex justify-center py-3 px-4 text-base font-medium rounded-md bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none">
+                          class="w-full inline-flex justify-center py-3 px-4 text-base font-medium rounded-md bg-indigo-600 text-white focus:outline-none">
                     Finish the game for good
                   </button>
                 </div>

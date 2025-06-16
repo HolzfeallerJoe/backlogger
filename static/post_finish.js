@@ -89,15 +89,21 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     const gameInput = document.getElementById('game');
     const form = document.getElementById('add-post-finish-form');
+
     const durationInput = document.getElementById('duration');
 
-    document
-        .querySelectorAll('input[name="rating"]')
-        .forEach(radio => radio.addEventListener('change', updateStars));
+    const gameNames = games.map(g => g.name)
+    const escapeRe = s => s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+    const patternBody = gameNames.map(escapeRe).join('|')
+    gameInput.required = true
+    gameInput.pattern = `^(${patternBody})$`
+
+
 
     CardGameUI.showNoGame();
     updateStars();
     updatePeriodLabels();
+    updateSendButton();
 
     gameInput.addEventListener('input', async () => {
         const g = games.find(x => x.name === gameInput.value);
@@ -105,6 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
             CardGameUI.showNoGame();
             return;
         }
+
+        gameInput.setCustomValidity("")
 
         CardGameUI.setTextState(true);
         CardGameUI.els.title.textContent = g.name;
@@ -130,7 +138,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         CardGameUI.styleBlock('released', g.released ? 'active' : 'inactive');
         CardGameUI.styleBlock('purchased', g.purchased ? 'active' : 'inactive');
+        updateSendButton()
     });
+
+    gameInput.addEventListener('invalid', () => {
+        const v = gameInput.value.trim()
+        if (!v) {
+            gameInput.setCustomValidity('Please select a game')
+        } else {
+            gameInput.setCustomValidity(
+                gameNames.includes(v) ?
+                '' // valid name
+                :
+                'Please select a valid game'
+            )
+        }
+    })
 
     form.addEventListener('submit', (e) => {
         if (!form.checkValidity()) {
@@ -139,7 +162,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    document
+        .querySelectorAll('input[name="rating"]')
+        .forEach(radio => radio.addEventListener('change', updateStars));
+
     durationInput.addEventListener('input', updatePeriodLabels);
+
+    form.addEventListener('input', updateSendButton);
+    form.addEventListener('change', updateSendButton);
 });
 
 function updateStars() {
@@ -187,28 +217,52 @@ function updatePeriodLabels() {
     });
 }
 
-// TODO: VALIDATION
-
-async function send_post_finish(event) {
-    event.preventDefault();
+function updateSendButton() {
     const games = JSON.parse(
         document.getElementById('games-data').textContent
     );
     const gameInput = document.getElementById('game');
-    const game = games.find(x => x.name === gameInput.value);
+    const gameSelected = games.some(x => x.name === gameInput.value);
+
+    const form = document.getElementById('add-post-finish-form');
+    const submitBtn = document.getElementById('post-finish-submit');
+
+    if (form.checkValidity() && gameSelected) {
+        submitBtn.classList.replace('bg-gray-400', 'bg-indigo-600');
+        submitBtn.classList.replace('cursor-default', 'cursor-pointer');
+    } else {
+        submitBtn.classList.replace('bg-indigo-600', 'bg-gray-400');
+        submitBtn.classList.replace('cursor-pointer', 'cursor-default');
+    }
+}
+
+async function send_post_finish(event) {
+    event.preventDefault();
+
+    const games = JSON.parse(
+        document.getElementById('games-data').textContent
+    );
+
+    const gameInput = document.getElementById('game');
+
+    if (!gameInput.reportValidity()) {
+        return
+    }
 
     const form = document.getElementById('add-post-finish-form')
     const formData = new FormData(form);
 
+    const game = games.find(x => x.name === gameInput.value);
+
     const rawNum = parseInt(formData.get('duration'), 10) || 1;
-    let rawPeriod = formData.get('period').toLowerCase();
+    let rawPeriod = formData.get('period');
     if (rawNum === 1) rawPeriod = rawPeriod.replace(/s$/, '');
 
     const payload = {
         dropped: formData.get('dropped') === 'on',
         credits: formData.get('credits') === 'on',
         time_played: parseInt(formData.get('time_played')),
-        duration: `${formData.get('duration')} ${rawPeriod}`,
+        duration: `${formData.get('duration')} ${rawPeriod.toLowerCase()}`,
         rating: parseInt(formData.get('rating')),
         worth: formData.get('credits') === 'on',
         reason: formData.get('reason') || '',
@@ -230,6 +284,7 @@ async function send_post_finish(event) {
             .replace('__SUCCESS_MESSAGE__', `Your post finish thoughs have been added to ${game.name}`);
         form.reset()
         updateStars()
+        updateSendButton()
         gameInput.value = ''
         gameInput.dispatchEvent(new KeyboardEvent('keyup', {
             bubbles: true,
