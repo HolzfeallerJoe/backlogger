@@ -332,11 +332,27 @@ def show_stats(request: Request) -> HTMLResponse:
 
 
 @app.get('/search_game', response_class=HTMLResponse, tags=['helper'])
-async def search_game(game: str):
+async def search_game(request: Request, game: str):
+	params: Dict[str, Any] = dict(request.query_params)
+	search_in = params.get('search_in')
+
 	options = []
-	res = await search_for_game(query=game)
-	for listing in res.items:
-		options.append(f'<option value="{listing.name}">{listing.name}</option>')
+	listings = []
+
+	if search_in == 'steam':
+		res = await search_for_game(query=game)
+		listings = res.items
+	if search_in == 'post_finish':
+		res = get_all_games(app.state.connection, {'finished_at': 'NULL'})
+		listings = res.data
+
+	for listing in listings:
+		if isinstance(listing, dict):
+			name = listing['name']
+		else:
+			name = listing.name
+		options.append(f'<option value="{name}">{name}</option>')
+
 	return ''.join(options)
 
 
