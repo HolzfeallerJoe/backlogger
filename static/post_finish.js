@@ -169,6 +169,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     form.addEventListener('input', updateSendButton);
     form.addEventListener('change', updateSendButton);
+
+    document.getElementById('post-finish-submit').addEventListener('click', send_post_finish);
 });
 
 function updateStars() {
@@ -232,9 +234,7 @@ function updateSendButton() {
     }
 }
 
-async function send_post_finish(event) {
-    event.preventDefault();
-
+async function send_post_finish() {
     const gameInput = document.getElementById('game');
 
     if (!gameInput.reportValidity()) {
