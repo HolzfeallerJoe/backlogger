@@ -1,8 +1,8 @@
 from datetime import datetime
 from psycopg import Connection, errors
-from typing import Optional, NamedTuple
+from typing import Optional, NamedTuple, List, Dict, Any
 
-from psycopg.sql import SQL
+from psycopg.sql import SQL, Placeholder, Identifier
 
 from game import Game, PostFinish
 
@@ -10,7 +10,7 @@ from game import Game, PostFinish
 class OperationResult(NamedTuple):
 	success: bool
 	message: str
-	data: Optional[any] = None
+	data: Optional[Any] = None
 
 
 def create_database(connection: Connection) -> OperationResult:
@@ -158,20 +158,38 @@ def delete_game(connection: Connection, game_id: int) -> OperationResult:
 		return OperationResult(False, 'Error deleting game', e)
 
 
-def get_all_games(connection: Connection, skip: int, limit: int) -> OperationResult:
+def get_all_games(
+	connection: Connection,
+	parameter: Dict[str, Any] = None,
+) -> OperationResult:
 	try:
 		print('~~~Selecting all Games~~~')
-		select_statement = SQL("""
-      SELECT * FROM Game
-      OFFSET %s
-      LIMIT %s
-    """)
+		select_statement: SQL = SQL('SELECT * FROM Game')
+		params: List[Any] = []
+
+		skip = parameter.pop('skip', 0)
+		limit = parameter.pop('limit', 100)
+
+		if parameter:
+			clauses = []
+			for col, val in parameter.items():
+				if val == "NULL":
+					clauses.append(
+						SQL("{} IS NULL").format(Identifier(col))
+					)
+				else:
+					clauses.append(SQL('{} = {}').format(Identifier(col), Placeholder()))
+					params.append(val)
+			select_statement += SQL(' WHERE ') + SQL(' AND ').join(clauses)
+		else:
+			select_statement += SQL(' OFFSET ') + Placeholder() + SQL(' LIMIT ') + Placeholder()
+			params.extend([skip, limit])
 
 		cursor = connection.cursor()
-		cursor.execute(select_statement, [skip, limit])
+		cursor.execute(select_statement, params)
 
 		games = cursor.fetchall()
-		columns = [desc[0] for desc in cursor.description]
+		columns = [desc.name for desc in cursor.description]
 		result = [dict(zip(columns, row)) for row in games]
 		print('Games were selected')
 

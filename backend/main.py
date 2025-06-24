@@ -1,6 +1,6 @@
 import os
 from contextlib import asynccontextmanager
-from typing import Dict, List
+from typing import Dict, List, Any
 
 import psycopg
 from fastapi import FastAPI, HTTPException, Path, Request
@@ -84,8 +84,11 @@ async def check_database_connection(request: Request, call_next: any):
 	description='Fetch a list of all games currently stored in the database.',
 	tags=['games'],
 )
-def get_games(skip: int = 0, limit: int = 100) -> Dict[str, List[Game]]:
-	res = get_all_games(app.state.connection, skip, limit)
+def get_games(
+	request: Request,
+) -> Dict[str, List[Game]]:
+	params: Dict[str, Any] = dict(request.query_params)
+	res = get_all_games(app.state.connection, parameter=params)
 
 	if not res.success:
 		raise HTTPException(
@@ -99,8 +102,7 @@ def get_games(skip: int = 0, limit: int = 100) -> Dict[str, List[Game]]:
 			detail={
 				'error': 'NotFound',
 				'message': 'No games found',
-				'skip': skip,
-				'limit': limit,
+				'parameter': params,
 			},
 		)
 
@@ -306,7 +308,7 @@ def show_game_list(request: Request) -> HTMLResponse:
 	'/post_finish', response_class=HTMLResponse, name='post_finish', tags=['websites']
 )
 def show_post_finish(request: Request) -> HTMLResponse:
-	result = get_all_games(app.state.connection, skip=0, limit=100)
+	result = get_all_games(app.state.connection)
 	games = result.data if result.success and result.data else []
 	games = [game for game in games if not game.get('finished_at')]
 
