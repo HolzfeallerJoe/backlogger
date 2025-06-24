@@ -50,6 +50,11 @@ class Game(StrippingModel):
 	excitement: Rating1to10 = Field(
 		..., description='How excited you are about this game (1–10)'
 	)
+	added_at: Optional[datetime] = Field(
+		None,
+		description='When the game was added to your backlog',
+		json_schema_extra={'readOnly': True},
+	)
 
 
 class PostFinish(StrippingModel):
