@@ -44,7 +44,7 @@ const CardGameUI = (() => {
         else apply(block, icon, label, 'gray', true)
     }
 
-    function apply(block, icon, label, color, disabled = false) {
+    function apply(block, icon, label, color) {
         if (color === 'green') {
             block.classList.add('bg-green-100')
             icon.classList.add('text-green-800')
@@ -82,23 +82,23 @@ const CardGameUI = (() => {
     }
 })()
 
+let games = []
 
-document.addEventListener('DOMContentLoaded', () => {
-    const games = JSON.parse(
-        document.getElementById('games-data').textContent
-    );
+document.addEventListener('DOMContentLoaded', async () => {
+    const res = await fetch('/games?finished_at=NULL')
+    if (!res.ok) {
+        console.error(`Failed to load games: ${res.status} ${res.statusText}`);
+    } else {
+        const resGames = await res.json();
+        games = resGames.games
+    }
+
     const gameInput = document.getElementById('game');
     const form = document.getElementById('add-post-finish-form');
 
     const durationInput = document.getElementById('duration');
 
-    const gameNames = games.map(g => g.name)
-    const escapeRe = s => s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
-    const patternBody = gameNames.map(escapeRe).join('|')
-    gameInput.required = true
-    gameInput.pattern = `^(${patternBody})$`
-
-
+    createRegex(gameInput)
 
     CardGameUI.showNoGame();
     updateStars();
@@ -148,8 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             gameInput.setCustomValidity(
                 gameNames.includes(v) ?
-                '' // valid name
-                :
+                '' :
                 'Please select a valid game'
             )
         }
@@ -218,9 +217,6 @@ function updatePeriodLabels() {
 }
 
 function updateSendButton() {
-    const games = JSON.parse(
-        document.getElementById('games-data').textContent
-    );
     const gameInput = document.getElementById('game');
     const gameSelected = games.some(x => x.name === gameInput.value);
 
@@ -238,10 +234,6 @@ function updateSendButton() {
 
 async function send_post_finish(event) {
     event.preventDefault();
-
-    const games = JSON.parse(
-        document.getElementById('games-data').textContent
-    );
 
     const gameInput = document.getElementById('game');
 
@@ -285,6 +277,7 @@ async function send_post_finish(event) {
         form.reset()
         updateStars()
         updateSendButton()
+        removeGame(game.name, gameInput)
         gameInput.value = ''
         gameInput.dispatchEvent(new KeyboardEvent('keyup', {
             bubbles: true,
@@ -303,4 +296,19 @@ async function send_post_finish(event) {
 
     container.innerHTML = template;
     setTimeout(() => container.innerHTML = '', 5000);
+}
+
+function createRegex(gameInput) {
+    const gameNames = games.map(g => g.name)
+    const escapeRe = s => s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+    const patternBody = gameNames.map(escapeRe).join('|')
+    gameInput.required = true
+    gameInput.pattern = `^(${patternBody})$`
+}
+
+function removeGame(gameName, gameInput) {
+    const idx = games.findIndex(g => g.name === gameName);
+    if (idx > -1) games.splice(idx, 1);
+
+    createRegex(gameInput)
 }

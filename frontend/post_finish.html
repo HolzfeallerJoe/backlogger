@@ -320,9 +320,7 @@
          message='__ERROR_MESSAGE__'
        ) }}
     </script>
-    <script type="application/json" id="games-data">
-      {{ games | tojson }}
-    </script>
-    <script src="{{ url_for('static', path='post_finish.js') }}"></script>
+    <script type="module"
+            src="{{ url_for('static', path='post_finish.js') }}"></script>
   </body>
 </html>
