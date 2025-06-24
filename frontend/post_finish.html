@@ -7,6 +7,7 @@
   </head>
   <body>
     {% from 'components/alert.html' import alert %}
+    {% from 'components/combo_box.html' import combo_box with context %}
     {% include 'components/nav_bar.html' %}
 
     <div class="overflow-hidden bg-white py-24 sm:py-32">
@@ -236,7 +237,7 @@
           </form>
 
           <div class="mt-2.5 relative group">
-            {% include 'components/combo_box.html' %}
+            {{ combo_box(search_in="post_finish") }}
 
             <div id="game-card"
                  class="bg-white shadow rounded-lg overflow-hidden">
