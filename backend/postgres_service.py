@@ -34,6 +34,7 @@ def create_database(connection: Connection) -> OperationResult:
           worth BOOLEAN,
           reason TEXT,
           finished_at TIMESTAMP
+					added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
     """)
 
