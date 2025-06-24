@@ -299,8 +299,10 @@ def show_add_game(request: Request) -> HTMLResponse:
 
 @app.get('/game_list', response_class=HTMLResponse, name='game_list', tags=['websites'])
 def show_game_list(request: Request) -> HTMLResponse:
+	result = get_all_games(app.state.connection)
+	games = result.data if result.success and result.data else []
 	return templates.TemplateResponse(
-		'game_list.html', {'request': request, 'title': 'Backlogger'}
+		'game_list.html', {'request': request, 'title': 'Backlogger', 'games': games}
 	)
 
 
