@@ -1,4 +1,4 @@
-{% macro combo_box(search_in="") %}
+{% macro combo_box(search_in="steam") %}
   <link href="{{ url_for('static', path='combo_box.css') }}"
         rel="stylesheet" />
   <script src="https://unpkg.com/htmx.org@1.9.2"></script>
@@ -7,9 +7,17 @@
     Game
   </label>
   <div class="mt-2.5 relative group">
-    <input id="game" name="game" list="game-list" autocomplete="off" placeholder="Search games…" required hx-get="/search_game?{{ search_in }}={% raw %}{value}
-    {% endraw %}
-    " hx-trigger="load from:window, keyup changed delay:300ms" hx-target="#game-list" hx-swap="innerHTML" class="appearance-none block w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-base text-gray-900 placeholder-gray-400 focus:border-indigo-600 focus:outline-none sm:text-sm" />
+    <input id="game"
+           name="game"
+           list="game-list"
+           autocomplete="off"
+           placeholder="Search games…"
+           required
+           hx-get="/search_game?search_in={{ search_in }}"
+           hx-trigger="load from:window, keyup changed delay:300ms"
+           hx-target="#game-list"
+           hx-swap="innerHTML"
+           class="appearance-none block w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-base text-gray-900 placeholder-gray-400 focus:border-indigo-600 focus:outline-none sm:text-sm" />
     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
       <svg xmlns="http://www.w3.org/2000/svg"
            viewBox="0 0 20 20"
