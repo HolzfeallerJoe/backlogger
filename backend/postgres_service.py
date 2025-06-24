@@ -160,7 +160,7 @@ def delete_game(connection: Connection, game_id: int) -> OperationResult:
 
 def get_all_games(
 	connection: Connection,
-	parameter: Dict[str, Any] = None,
+	parameter: Dict[str, Any] = {},
 ) -> OperationResult:
 	try:
 		print('~~~Selecting all Games~~~')
@@ -173,16 +173,16 @@ def get_all_games(
 		if parameter:
 			clauses = []
 			for col, val in parameter.items():
-				if val == "NULL":
-					clauses.append(
-						SQL("{} IS NULL").format(Identifier(col))
-					)
+				if val == 'NULL':
+					clauses.append(SQL('{} IS NULL').format(Identifier(col)))
 				else:
 					clauses.append(SQL('{} = {}').format(Identifier(col), Placeholder()))
 					params.append(val)
 			select_statement += SQL(' WHERE ') + SQL(' AND ').join(clauses)
 		else:
-			select_statement += SQL(' OFFSET ') + Placeholder() + SQL(' LIMIT ') + Placeholder()
+			select_statement += (
+				SQL(' OFFSET ') + Placeholder() + SQL(' LIMIT ') + Placeholder()
+			)
 			params.extend([skip, limit])
 
 		cursor = connection.cursor()
