@@ -14,6 +14,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         gameItem.addEventListener('click', () => {
             adjustPostFinishCard(game)
         })
+        const res = await fetch(`/game_image?game=${game.name}`)
+        if (!res.ok) {
+            console.error(`Failed to load games: ${res.status} ${res.statusText}`);
+        } else {
+            const resImage = await res.json();
+            const image = resImage.image_path
+
+            if (image) {
+                gameItem.style.backgroundImage = `url(${image})`
+            }
+        }
     }
 })
 

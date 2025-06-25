@@ -13,14 +13,7 @@
         <ul>
           {% for game in games %}
             <li id="{{ game.name }}-item"
-                class="relative flex items-center justify-between rounded-lg mb-1 p-4 border border-solid border-black bg-center bg-cover hover:cursor-pointer {% if not game.image_url %} bg-gray-200 {% endif %}"
-                {%- if game.image_url %}
-                style="background-image: url('{{ game.image_url }}')"
-                {%- endif %}>
-              {% if game.image_url %}
-                <div class="absolute inset-0 bg-black bg-opacity-30">
-                </div>
-              {% endif %}
+                class="relative flex items-center justify-between rounded-lg mb-1 p-4 border border-solid border-black bg-center bg-cover hover:cursor-pointer bg-gray-200">
               <div class="relative flex flex-col w-full space-y-1 text-black">
                 <div class="flex items-baseline space-x-2">
                   <p class="font-medium truncate">
@@ -117,7 +110,8 @@
                  class="text-sm font-medium text-indigo-600">
                 - in -
               </p>
-              <span id="dropped" class="inline-block px-2 py-0.5 bg-green-100 text-green-800 uppercase text-xs font-semibold rounded-full">
+              <span id="dropped"
+                    class="inline-block px-2 py-0.5 bg-green-100 text-green-800 uppercase text-xs font-semibold rounded-full">
                 Dropped
               </span>
             </div>
@@ -132,15 +126,15 @@
                 </svg>
 
                 <span id="finished-at">-</span>
-               </div>
+              </div>
               <span id="credits"
                     class="inline-block px-2 py-0.5 bg-green-100 text-green-800 uppercase text-xs font-semibold rounded-full">
                 Credits
               </span>
             </div>
-            <div
-                 class="flex items-center text-xs text-gray-400 mt-1 justify-end">
-              <span id="worth" class="inline-block px-2 py-0.5 bg-green-100 text-green-800 uppercase text-xs font-semibold rounded-full">
+            <div class="flex items-center text-xs text-gray-400 mt-1 justify-end">
+              <span id="worth"
+                    class="inline-block px-2 py-0.5 bg-green-100 text-green-800 uppercase text-xs font-semibold rounded-full">
                 Worth
               </span>
             </div>
