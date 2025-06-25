@@ -20,8 +20,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             } else {
                 res.json().then((resImage) => {
                     const image = resImage.image_path
+                    const gameBackdrop = document.getElementById(`${game.name}-backdrop`)
                     if (image) {
                         gameItem.style.backgroundImage = `url(${image})`
+                        gameBackdrop.hidden = false
+                        gameItem.classList.remove('text-black')
+                        gameItem.classList.add('text-white')
+                    } else {
+                        gameBackdrop.hidden = true
                     }
                 });
 
