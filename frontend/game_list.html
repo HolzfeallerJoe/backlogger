@@ -15,10 +15,10 @@
         <ul class="w-full">
           {% for game in games %}
             <li id="{{ game.name }}-item"
-                class="
-                w-full
-                min-w-0 relative flex items-center justify-between rounded-lg mb-1 p-4 border border-solid border-black bg-center bg-cover hover:cursor-pointer bg-gray-200 text-black">
-              <div id="{{ game.name }}-backdrop" class="absolute inset-0 bg-black/20 backdrop-blur-sm pointer-events-none" hidden>
+                class="w-full min-w-0 relative flex items-center justify-between rounded-lg mb-1 p-4 border border-solid border-black bg-center bg-cover hover:cursor-pointer bg-gray-200 text-black">
+              <div id="{{ game.name }}-backdrop"
+                   class="absolute inset-0 bg-black/30 backdrop-blur-sm pointer-events-none rounded-lg"
+                   hidden>
               </div>
               <div class="relative z-10 flex flex-col w-full space-y-1 min-w-0">
                 <div class="flex items-baseline space-x-2">
