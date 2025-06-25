@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 async function adjustPostFinishCard(game) {
-    const gameId = document.getElementById('game-id')
+    const gameName = document.getElementById('game-name')
     const rating = document.getElementById('rating')
     const statsCard = document.getElementById('stats-card')
     const postStats = document.getElementById('finish-stats')
@@ -47,7 +47,7 @@ async function adjustPostFinishCard(game) {
     }
 
     statsCard.hidden = false
-    gameId.innerHTML = game.name
+    gameName.innerHTML = game.name
 
     if (post_finish !== null) {
         rating.innerHTML = post_finish.rating

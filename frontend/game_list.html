@@ -5,16 +5,18 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>{{ title }}</title>
   </head>
-  <body>
+  <body class="overflow-x-hidden">
     {% from 'components/combo_box.html' import combo_box with context %}
     {% include 'components/nav_bar.html' %}
-    <div class="container mx-auto p-6 grid grid-cols-2 gap-8">
-      <div>
-        <ul>
+
+    <div class="container mx-auto p-6 grid gap-8"
+         style="grid-template-columns: minmax(0,2fr) minmax(0,1fr);">
+      <div class="min-w-0">
+        <ul class="w-full">
           {% for game in games %}
             <li id="{{ game.name }}-item"
-                class="relative flex items-center justify-between rounded-lg mb-1 p-4 border border-solid border-black bg-center bg-cover hover:cursor-pointer bg-gray-200">
-              <div class="relative flex flex-col w-full space-y-1 text-black">
+                class="w-full min-w-0 relative flex items-center justify-between rounded-lg mb-1 p-4 border border-solid border-black bg-center bg-cover hover:cursor-pointer bg-gray-200">
+              <div class="relative flex flex-col w-full space-y-1 text-black min-w-0">
                 <div class="flex items-baseline space-x-2">
                   <p class="font-medium truncate">
                     {{ game.name }}
@@ -28,15 +30,17 @@
                 </p>
               </div>
 
-              <div class="relative flex items-center space-x-3 flex-shrink-0">
+              <div class="relative flex items-center space-x-3">
                 <div class="flex flex-col items-center space-y-1">
                   <p class="flex items-center justify-center space-x-2">
                     <span>{{ game.excitement }} / 10</span>
                     <svg xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 20 20"
                          fill="currentColor"
-                         class="size-5">
-                      <path fill-rule="evenodd" d="M13.5 4.938a7 7 0 1 1-9.006 1.737c.202-.257.59-.218.793.039.278.352.594.672.943.954.332.269.786-.049.773-.476a5.977 5.977 0 0 1 .572-2.759 6.026 6.026 0 0 1 2.486-2.665c.247-.14.55-.016.677.238A6.967 6.967 0 0 0 13.5 4.938ZM14 12a4 4 0 0 1-4 4c-1.913 0-3.52-1.398-3.91-3.182-.093-.429.44-.643.814-.413a4.043 4.043 0 0 0 1.601.564c.303.038.531-.24.51-.544a5.975 5.975 0 0 1 1.315-4.192.447.447 0 0 1 .431-.16A4.001 4.001 0 0 1 14 12Z" clip-rule="evenodd" />
+                         class="h-5 w-5">
+                      <path fill-rule="evenodd"
+                            d="M13.5 4.938a7 7 0 1 1-9.006 1.737c.202-.257.59-.218.793.039.278.352.594.672.943.954.332.269.786-.049.773-.476a5.977 5.977 0 0 1 .572-2.759 6.026 6.026 0 0 1 2.486-2.665c.247-.14.55-.016.677.238A6.967 6.967 0 0 0 13.5 4.938ZM14 12a4 4 0 0 1-4 4c-1.913 0-3.52-1.398-3.91-3.182-.093-.429.44-.643.814-.413a4.043 4.043 0 0 0 1.601.564c.303.038.531-.24.51-.544a5.975 5.975 0 0 1 1.315-4.192.447.447 0 0 1 .431-.16A4.001 4.001 0 0 1 14 12Z"
+                            clip-rule="evenodd" />
                     </svg>
                   </p>
                   <p class="flex items-center justify-center text-sm space-x-6">
@@ -50,12 +54,16 @@
                     </span>
                   </p>
                 </div>
+                <!-- arrow -->
                 <svg xmlns="http://www.w3.org/2000/svg"
-                     class="h-5 w-5 text-black opacity-75"
-                     fill="none"
                      viewBox="0 0 24 24"
-                     stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     class="h-5 w-5 opacity-75">
+                  <path d="M9 5l7 7-7 7" />
                 </svg>
               </div>
             </li>
@@ -63,11 +71,11 @@
         </ul>
       </div>
 
-      <div class="bg-gray-50 rounded-lg shadow p-6 sticky top-6 self-start">
+      <div class="bg-gray-50 rounded-lg shadow p-6 sticky top-6 self-start max-w-sm">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <div>
-              <p id="game-id"
+              <p id="game-name"
                  class="text-lg font-semibold text-gray-900">
                 -
               </p>
@@ -92,7 +100,12 @@
                    viewBox="0 0 20 20"
                    fill="currentColor"
                    class="h-5 w-5 mr-1">
-                <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
+                <path fill-rule="evenodd"
+                      d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4Z"
+                      clip-rule="evenodd" />
+                <path fill-rule="evenodd"
+                      d="M8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z"
+                      clip-rule="evenodd" />
               </svg>
               Delete
             </button>
