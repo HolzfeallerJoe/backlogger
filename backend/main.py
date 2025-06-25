@@ -212,7 +212,6 @@ def get_post_finish(
 	res = get_post_finish_game_id(app.state.connection, game_id)
 
 	if not res.success:
-		# distinguish “no data yet” vs real exception
 		if isinstance(res.data, Exception):
 			raise HTTPException(
 				status_code=500,
@@ -230,7 +229,7 @@ def get_post_finish(
 				'game_id': game_id,
 			},
 		)
-	return {'Post Finish': res.data}
+	return {'post_finish': res.data}
 
 
 @app.patch(
